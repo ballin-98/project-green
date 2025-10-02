@@ -1,11 +1,23 @@
+"use client";
+
+import { Add } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 import { TradeInfo } from "../lib/types";
-import { Card, CardContent, Typography, Stack, Box } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Stack,
+  Box,
+  Button,
+} from "@mui/material";
 
 export interface TradeListProps {
   trades: TradeInfo[];
 }
 
 export default function TradeList({ trades }: TradeListProps) {
+  const router = useRouter();
   if (trades.length === 0) {
     return <Typography>No trades available.</Typography>;
   }
@@ -23,20 +35,28 @@ export default function TradeList({ trades }: TradeListProps) {
         overflowY: "auto", // ✅ makes the list scrollable
       }}
     >
-      {/* Sticky header */}
-      <Typography
-        variant="h6"
+      <Box
         sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center", // ✅ vertically center both header & button
+          px: 1,
+          py: 2,
           position: "sticky",
           top: 0,
           backgroundColor: "white",
           zIndex: 10,
-          p: 1,
-          height: 40,
         }}
       >
-        Recent Trades
-      </Typography>
+        <Typography variant="h6">Recent Trades</Typography>
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          onClick={() => router.push("/trades/new")}
+        >
+          Add Trade
+        </Button>
+      </Box>
       <Box sx={{ zIndex: 1 }}>
         <Stack>
           {trades.map((trade, index) => (
