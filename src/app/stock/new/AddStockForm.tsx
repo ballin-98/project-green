@@ -16,19 +16,12 @@ export default function StockForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("Submitting form with values:");
-    console.log("Stock Name:", stockName);
-    console.log("Wealth Simple:", Number(wealthSimple));
-    console.log("Quest Trade:", Number(questTrade));
-    console.log("Dividend Frequency:", Number(dividendFrequency));
-
     await addNewStock(
       stockName,
       Number(questTrade), // questTrade first
       Number(wealthSimple), // then wealthSimple
       Number(dividendFrequency) // dividendFrequency last
     );
-    console.log("Stock added successfully");
     router.push("/");
   };
 

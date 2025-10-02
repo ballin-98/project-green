@@ -8,7 +8,6 @@ export interface StockListProps {
 }
 
 export default function StockList({ stocks }: StockListProps) {
-  // console.log("stocks in StockList: ", stocks);
   return (
     <>
       {stocks.map((stock) => (

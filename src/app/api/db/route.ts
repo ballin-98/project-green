@@ -14,7 +14,7 @@ export async function GET(): Promise<
     .from("stocks")
     .select("*")
     .order("quantity", { ascending: false });
-  // console.log("data from db: ", data);
+
   let stockData: ClientStockData[] = [];
   if (data) {
     stockData = data?.map((stock) => ({
@@ -44,8 +44,6 @@ export async function POST(req: Request): Promise<NextResponse> {
     // Parse the JSON body from the request
     const { name, wealth_simple, quest_trade, dividend_frequency } =
       await req.json();
-
-    console.log("dividend frequency in request: ", dividend_frequency);
 
     // Insert into Supabase, mapping request fields to DB columns
     const { data, error } = await supabase.from("stocks").insert([

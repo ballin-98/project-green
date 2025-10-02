@@ -34,7 +34,6 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     // Parse the JSON body from the request
     const { stock_name, shares, profit } = await req.json();
-    console.log("Received trade data:", { stock_name, shares, profit });
 
     // Insert into Supabase, mapping request fields to DB columns
     const { data, error } = await supabase.from("trades").insert([

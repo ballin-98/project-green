@@ -3,38 +3,32 @@ import { ClientStockData } from "./types";
 // for now this will get all the stocks that are saved
 // rename variables and clean this up
 export const getStock = async (): Promise<ClientStockData[]> => {
-  const ownedStocks: ClientStockData[] = [];
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
   const ownedStocksResponse = await fetch(`${baseUrl}/api/db`);
   const ownedStocksResponseJson = await ownedStocksResponse.json();
-  // console.log("ownedStocksResponseJson ", ownedStocksResponseJson);
 
-  for (const stock of ownedStocksResponseJson) {
-    const stockDetails = await fetch(
-      `${baseUrl}/api/stock?ticker=${encodeURIComponent(stock.name)}`,
-      {
-        cache: "no-store",
-      }
-    );
+  const stockDetailPromises = ownedStocksResponseJson.map(
+    async (stock: any) => {
+      const stockDetails = await fetch(
+        `${baseUrl}/api/stock?ticker=${encodeURIComponent(stock.name)}`
+      );
+      const stockDetailsJson = await stockDetails.json();
 
-    const stockDetailsJson = await stockDetails.json();
-    // console.log("stockDetailsJson: ", stockDetailsJson[0].price);
-
-    ownedStocks.push({
-      id: stock.id,
-      name: stock.name,
-      quantity: stock.quantity,
-      potential: stock.potential,
-      mostRecentDividend: stockDetailsJson[0].mostRecentDividend,
-      price: stockDetailsJson[0].price,
-      wealthSimple: stock.wealthSimple,
-      questTrade: stock.questTrade,
-      dividendFrequency: stock.dividendFrequency,
-    });
-  }
-
-  return ownedStocks;
+      return {
+        id: stock.id,
+        name: stock.name,
+        quantity: stock.quantity,
+        potential: stock.potential,
+        mostRecentDividend: stockDetailsJson[0].mostRecentDividend,
+        price: stockDetailsJson[0].price,
+        wealthSimple: stock.wealthSimple,
+        questTrade: stock.questTrade,
+        dividendFrequency: stock.dividendFrequency,
+      } as ClientStockData;
+    }
+  );
+  return await Promise.all(stockDetailPromises);
 };
 
 export const addNewStock = async (

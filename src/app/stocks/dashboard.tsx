@@ -104,8 +104,6 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
       headerName: "Income",
       minWidth: 200,
       valueGetter: (value, row) => {
-        // console.log("value: ", value);
-        // console.log("row: ", row);
         if (!row.mostRecentDividend) {
           return null;
         }
