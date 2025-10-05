@@ -40,3 +40,10 @@ export const calculateTotalAssets = (stocks: ClientStockData[]) => {
     0
   );
 };
+
+export const calculateCashNeeded = (stocks: ClientStockData[]) => {
+  return stocks.reduce(
+    (total, stock) => total + (stock.price ?? 0) * (stock.potential ?? 0),
+    0
+  );
+};

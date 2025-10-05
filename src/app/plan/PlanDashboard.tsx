@@ -11,6 +11,7 @@ import {
   calculateMonthlyDividends,
   calculateYearlyDividends,
   calculateTotalAssets,
+  calculateCashNeeded,
 } from "../lib/utils/dashboardHelpers";
 
 interface DashboardProps {
@@ -23,6 +24,7 @@ export default function PlanDashboard({ stocks }: DashboardProps) {
   const [yearlyDividends, setYearlyDividends] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [potentialStocks, setPotentialStocks] = useState(stocks);
+  const [cash, setCash] = useState(0);
 
   useEffect(() => setMounted(true), []);
 
@@ -30,6 +32,7 @@ export default function PlanDashboard({ stocks }: DashboardProps) {
     setAssetValue(calculateTotalAssets(potentialStocks));
     setMonthlyDividends(calculateMonthlyDividends(potentialStocks));
     setYearlyDividends(calculateYearlyDividends(potentialStocks));
+    setCash(calculateCashNeeded(potentialStocks));
   }, [potentialStocks]);
 
   if (!mounted) return null;
@@ -185,6 +188,7 @@ export default function PlanDashboard({ stocks }: DashboardProps) {
               totalDividends={yearlyDividends}
               label="Yearly Dividends"
             />
+            <TotalCard totalDividends={cash} label="Cash Required" />
           </Box>
         </Box>
       </Box>
