@@ -89,7 +89,7 @@ export default function PlanDashboard({ stocks }: DashboardProps) {
         display: "flex",
         flexDirection: "column",
         height: "100vh",
-        p: 2,
+        paddingY: 1,
         boxSizing: "border-box",
       }}
     >
@@ -116,6 +116,7 @@ export default function PlanDashboard({ stocks }: DashboardProps) {
               flex: 1,
               display: "flex",
               flexDirection: "column",
+              height: "80%%",
             }}
           >
             <DataGrid
@@ -123,7 +124,6 @@ export default function PlanDashboard({ stocks }: DashboardProps) {
               columns={columns}
               sortModel={sortModel}
               processRowUpdate={handleRowUpdate}
-              autoHeight={false}
               sx={{ flex: 1, minHeight: 0 }}
             />
           </Box>

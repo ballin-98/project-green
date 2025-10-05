@@ -16,7 +16,7 @@ export const calculateYearlyDividends = (stocks: ClientStockData[]) => {
     (total, stock) =>
       total +
       (stock.mostRecentDividend ?? 0) *
-        stock.quantity *
+        ((stock.quantity ?? 0) + (stock.potential ?? 0)) *
         stock.dividendFrequency,
     0
   );
@@ -27,14 +27,16 @@ export const calculateMonthlyDividends = (stocks: ClientStockData[]) => {
     (total, stock) =>
       total +
       (stock.dividendFrequency === 12 ? stock.mostRecentDividend ?? 0 : 0) *
-        stock.quantity,
+        ((stock.quantity ?? 0) + (stock.potential ?? 0)),
     0
   );
 };
 
 export const calculateTotalAssets = (stocks: ClientStockData[]) => {
   return stocks.reduce(
-    (total, stock) => total + (stock.price ?? 0) * stock.quantity,
+    (total, stock) =>
+      total +
+      (stock.price ?? 0) * ((stock.quantity ?? 0) + (stock.potential ?? 0)),
     0
   );
 };

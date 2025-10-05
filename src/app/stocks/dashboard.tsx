@@ -70,7 +70,7 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
         display: "flex",
         flexDirection: "column",
         height: "100vh",
-        p: 2,
+        paddingY: 1,
         boxSizing: "border-box",
       }}
     >
