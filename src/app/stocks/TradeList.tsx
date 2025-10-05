@@ -25,11 +25,12 @@ export default function TradeList({ trades }: TradeListProps) {
   return (
     <Box
       sx={{
+        display: "flex",
+        flexDirection: "column",
         marginTop: 2,
         paddingX: 2,
         borderRadius: 2,
         height: 400, // fixed height
-        width: "100%",
         boxShadow: 3,
         backgroundColor: "white",
         overflowY: "auto", // ✅ makes the list scrollable

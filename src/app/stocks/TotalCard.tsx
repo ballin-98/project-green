@@ -12,7 +12,9 @@ export default function TotalCard({ totalDividends, label }: TotalCardProps) {
         boxShadow: 3,
         borderRadius: 2,
         backgroundColor: "white",
-        flex: 1,
+        flex: 1, // allows it to grow/shrink in a flex row
+        minWidth: 150, // ensures it doesn't shrink too small
+        width: "100%", // fill available width in column wrap
       }}
     >
       <Box
