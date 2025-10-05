@@ -20,8 +20,12 @@ export default function AppHeader() {
           justifyContent: "space-between",
         }}
       >
-        <Typography variant="h6" sx={{ margin: 0 }}>
-          My App
+        <Typography
+          variant="h6"
+          sx={{ margin: 0 }}
+          onClick={() => router.push("/")}
+        >
+          Portfolio Overview
         </Typography>
 
         <Box sx={{ display: "flex", gap: 2 }}>

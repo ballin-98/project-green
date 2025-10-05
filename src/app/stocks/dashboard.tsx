@@ -7,22 +7,17 @@ import TotalCard from "./TotalCard";
 import ProgressBar from "./ProgressBar";
 import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
 import TradeList from "./TradeList";
+import {
+  divFreqToString,
+  calculateMonthlyDividends,
+  calculateYearlyDividends,
+  calculateTotalAssets,
+} from "../lib/utils/dashboardHelpers";
 
 interface DashboardProps {
   stocks: ClientStockData[];
   trades: TradeInfo[];
 }
-
-export const divFreqToString = (freq: number) => {
-  switch (freq) {
-    case 12:
-      return "Monthly";
-    case 4:
-      return "Quarterly";
-    default:
-      return "N/A";
-  }
-};
 
 export default function Dashboard({ stocks, trades }: DashboardProps) {
   const [monthlyDividends, setMonthlyDividends] = useState(0);
@@ -33,31 +28,9 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    setAssetValue(
-      stocks.reduce(
-        (total, stock) => total + (stock.price ?? 0) * stock.quantity,
-        0
-      )
-    );
-    setMonthlyDividends(
-      stocks.reduce(
-        (total, stock) =>
-          total +
-          (stock.dividendFrequency === 12 ? stock.mostRecentDividend ?? 0 : 0) *
-            stock.quantity,
-        0
-      )
-    );
-    setYearlyDividends(
-      stocks.reduce(
-        (total, stock) =>
-          total +
-          (stock.mostRecentDividend ?? 0) *
-            stock.quantity *
-            stock.dividendFrequency,
-        0
-      )
-    );
+    setAssetValue(calculateTotalAssets(stocks));
+    setMonthlyDividends(calculateMonthlyDividends(stocks));
+    setYearlyDividends(calculateYearlyDividends(stocks));
   }, [stocks]);
 
   if (!mounted) return null;
@@ -97,7 +70,7 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
         display: "flex",
         flexDirection: "column",
         height: "100vh",
-        p: 2,
+        paddingY: 1,
         boxSizing: "border-box",
       }}
     >
