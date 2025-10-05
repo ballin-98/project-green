@@ -8,7 +8,10 @@ export async function GET(): Promise<
   NextResponse<TradeInfo[] | { error: string }>
 > {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("trades").select("*");
+  const { data, error } = await supabase
+    .from("trades")
+    .select("*")
+    .order("created_at", { ascending: false });
 
   let tradeData: TradeInfo[] = [];
   if (data) {
