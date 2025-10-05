@@ -10,9 +10,9 @@ export default function TotalCard({ totalDividends, label }: TotalCardProps) {
     <Box
       sx={{
         boxShadow: 3,
-        width: "100%",
         borderRadius: 2,
         backgroundColor: "white",
+        flex: 1,
       }}
     >
       <Box
@@ -23,6 +23,7 @@ export default function TotalCard({ totalDividends, label }: TotalCardProps) {
           flexDirection: "column",
           padding: 1,
           gap: 1,
+          flex: 1,
         }}
       >
         <Typography variant="h6" component="span">

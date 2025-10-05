@@ -14,8 +14,8 @@ export default function ProgressBar({
   const value = (current / goal) * 100 || 0;
 
   return (
-    <Box sx={{ width: "400px" }}>
-      <Typography variant="body2" color="text.primary" mb={0.5}>
+    <Box sx={{ width: "100%", margin: 1 }}>
+      <Typography variant="body2" color="text.primary">
         {label}
       </Typography>
 
@@ -27,7 +27,7 @@ export default function ProgressBar({
         </Typography>
 
         {/* Bar container */}
-        <Box sx={{ flex: 1, position: "relative" }}>
+        <Box sx={{ position: "relative", width: "80%" }}>
           <LinearProgress
             variant="determinate"
             value={value}

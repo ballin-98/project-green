@@ -7,7 +7,6 @@ import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
 import DashboardHeader from "../stocks/Header";
 import ProgressBar from "../stocks/ProgressBar";
 import TotalCard from "../stocks/TotalCard";
-import TradeList from "../stocks/TradeList";
 
 // this should be renamed
 interface DashboardProps {
@@ -184,17 +183,6 @@ export default function PlanDashboard({ stocks, trades }: DashboardProps) {
               height: "100%",
             }}
           >
-            <Box display={"flex"} flexDirection="row" gap={2} width={"100%"}>
-              <TotalCard totalDividends={assetValue} label="Asset Value" />
-              <TotalCard
-                totalDividends={monthlyDividends}
-                label="Monthly Dividends"
-              />
-              <TotalCard
-                totalDividends={yearlyDividends}
-                label="Yearly Dividends"
-              />
-            </Box>
             <div
               style={{
                 display: "flex",
@@ -241,7 +229,32 @@ export default function PlanDashboard({ stocks, trades }: DashboardProps) {
                 label="Yearly Income"
               />
             </Box>
-            <TradeList trades={trades} />
+            <Box
+              display={"flex"}
+              flexDirection="column"
+              gap={2}
+              mt={2}
+              flex={1}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: 1,
+                  flex: 1,
+                }}
+              >
+                <TotalCard totalDividends={assetValue} label="Asset Value" />
+                <TotalCard
+                  totalDividends={monthlyDividends}
+                  label="Monthly Dividends"
+                />
+              </Box>
+              <TotalCard
+                totalDividends={yearlyDividends}
+                label="Yearly Dividends"
+              />
+            </Box>
           </Box>
         </Box>
       </Box>
