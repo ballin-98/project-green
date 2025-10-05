@@ -1,3 +1,5 @@
+"use client";
+
 import { LinearProgress, Box, Typography } from "@mui/material";
 
 export interface ProgressBarProps {

@@ -1,29 +1,23 @@
 "use client";
 
 import { Box, Typography } from "@mui/material";
-import { ClientStockData, TradeInfo } from "../lib/types";
+import { ClientStockData } from "../lib/types";
 import { useEffect, useState } from "react";
 import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
 import ProgressBar from "../stocks/ProgressBar";
 import TotalCard from "../stocks/TotalCard";
+import {
+  divFreqToString,
+  calculateMonthlyDividends,
+  calculateYearlyDividends,
+  calculateTotalAssets,
+} from "../lib/utils/dashboardHelpers";
 
 interface DashboardProps {
   stocks: ClientStockData[];
-  trades: TradeInfo[];
 }
 
-export const divFreqToString = (freq: number) => {
-  switch (freq) {
-    case 12:
-      return "Monthly";
-    case 4:
-      return "Quarterly";
-    default:
-      return "N/A";
-  }
-};
-
-export default function PlanDashboard({ stocks, trades }: DashboardProps) {
+export default function PlanDashboard({ stocks }: DashboardProps) {
   const [monthlyDividends, setMonthlyDividends] = useState(0);
   const [assetValue, setAssetValue] = useState(0);
   const [yearlyDividends, setYearlyDividends] = useState(0);
@@ -33,35 +27,9 @@ export default function PlanDashboard({ stocks, trades }: DashboardProps) {
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    setAssetValue(
-      potentialStocks.reduce(
-        (total, stock) =>
-          total +
-          (stock.price ?? 0) * (stock.quantity + (stock.potential ?? 0)),
-        0
-      )
-    );
-
-    setMonthlyDividends(
-      potentialStocks.reduce(
-        (total, stock) =>
-          total +
-          (stock.dividendFrequency === 12 ? stock.mostRecentDividend ?? 0 : 0) *
-            (stock.quantity + (stock.potential ?? 0)),
-        0
-      )
-    );
-
-    setYearlyDividends(
-      potentialStocks.reduce(
-        (total, stock) =>
-          total +
-          (stock.mostRecentDividend ?? 0) *
-            (stock.quantity + (stock.potential ?? 0)) *
-            stock.dividendFrequency,
-        0
-      )
-    );
+    setAssetValue(calculateTotalAssets(potentialStocks));
+    setMonthlyDividends(calculateMonthlyDividends(potentialStocks));
+    setYearlyDividends(calculateYearlyDividends(potentialStocks));
   }, [potentialStocks]);
 
   if (!mounted) return null;
@@ -73,6 +41,7 @@ export default function PlanDashboard({ stocks, trades }: DashboardProps) {
     setPotentialStocks(updatedStocks);
   };
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const handleRowUpdate = (newRow: any) => {
     const potential =
       newRow.cash && newRow.price ? Math.floor(newRow.cash / newRow.price) : 0;
@@ -129,7 +98,6 @@ export default function PlanDashboard({ stocks, trades }: DashboardProps) {
           display: "flex",
           flex: 1,
           gap: 2,
-          minHeight: 0,
           flexDirection: { xs: "column", md: "row" }, // responsive stacking
         }}
       >
@@ -140,14 +108,12 @@ export default function PlanDashboard({ stocks, trades }: DashboardProps) {
             flexDirection: "column",
             flex: 7,
             gap: 2,
-            minHeight: 0,
           }}
         >
           {/* DataGrid */}
           <Box
             sx={{
               flex: 1,
-              minHeight: 0,
               display: "flex",
               flexDirection: "column",
             }}
@@ -206,7 +172,8 @@ export default function PlanDashboard({ stocks, trades }: DashboardProps) {
               display: "flex",
               flexDirection: "column",
               gap: 1,
-              flexWrap: "wrap", // allow wrapping on small screens
+              flexWrap: "wrap",
+              minWidth: "300px",
             }}
           >
             <TotalCard totalDividends={assetValue} label="Asset Value" />
