@@ -204,7 +204,7 @@ export default function PlanDashboard({ stocks, trades }: DashboardProps) {
           <Box
             sx={{
               display: "flex",
-              flexDirection: "row",
+              flexDirection: "column",
               gap: 1,
               flexWrap: "wrap", // allow wrapping on small screens
             }}
