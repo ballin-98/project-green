@@ -71,6 +71,18 @@ export default function PlanDashboard({ stocks }: DashboardProps) {
       flex: 1,
       minWidth: 100,
     },
+    {
+      field: "yield",
+      headerName: "Current Yield",
+      flex: 1,
+      minWidth: 100,
+      valueGetter: (_, row) => {
+        const dividend = row.mostRecentDividend ?? 0;
+        const actualDividend =
+          ((dividend * row.dividendFrequency) / row.price) * 100;
+        return `${actualDividend.toFixed(2)}%`;
+      },
+    },
     { field: "cash", headerName: "Cash", minWidth: 100, editable: true },
     { field: "potential", headerName: "Potential Shares", minWidth: 120 },
     {
@@ -164,7 +176,7 @@ export default function PlanDashboard({ stocks }: DashboardProps) {
             />
             <ProgressBar
               current={yearlyDividends}
-              goal={8000}
+              goal={12000}
               label="Yearly Income"
             />
           </Box>
