@@ -4,9 +4,16 @@ import Dashboard from "./dashboard";
 export default async function StocksPage() {
   const response = await getStock();
   const trades = await getTrades();
+  const monthlyGoal = Number(process.env.NEXT_PUBLIC_MONTHLY_GOAL) || 0;
+  const yearlyGoal = Number(process.env.NEXT_PUBLIC_YEARLY_GOAL) || 0;
   return (
     <div style={{ background: "#FAFAFA" }}>
-      <Dashboard stocks={response} trades={trades} />
+      <Dashboard
+        stocks={response}
+        trades={trades}
+        monthlyGoal={monthlyGoal}
+        yearlyGoal={yearlyGoal}
+      />
     </div>
   );
 }

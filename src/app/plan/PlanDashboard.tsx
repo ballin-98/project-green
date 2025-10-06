@@ -16,9 +16,15 @@ import {
 
 interface DashboardProps {
   stocks: ClientStockData[];
+  monthlyGoal?: number;
+  yearlyGoal?: number;
 }
 
-export default function PlanDashboard({ stocks }: DashboardProps) {
+export default function PlanDashboard({
+  stocks,
+  monthlyGoal,
+  yearlyGoal,
+}: DashboardProps) {
   const [monthlyDividends, setMonthlyDividends] = useState(0);
   const [assetValue, setAssetValue] = useState(0);
   const [yearlyDividends, setYearlyDividends] = useState(0);
@@ -171,12 +177,12 @@ export default function PlanDashboard({ stocks }: DashboardProps) {
             <Typography variant="h5">Goal Summary</Typography>
             <ProgressBar
               current={monthlyDividends}
-              goal={600}
+              goal={monthlyGoal ?? 0}
               label="Monthly Dividend"
             />
             <ProgressBar
               current={yearlyDividends}
-              goal={12000}
+              goal={yearlyGoal ?? 0}
               label="Yearly Income"
             />
           </Box>
