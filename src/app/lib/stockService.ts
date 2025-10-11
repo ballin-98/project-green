@@ -1,7 +1,6 @@
 import { ClientStockData } from "./types";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-// for now this will get all the stocks that are saved
-// rename variables and clean this up
 export const getStock = async (): Promise<ClientStockData[]> => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
@@ -48,6 +47,44 @@ export const addNewStock = async (
       quest_trade: questTrade,
       wealth_simple: wealthSimple,
       dividend_frequency: dividendFrequency,
+    }),
+  });
+  return response.json();
+};
+
+export const updateStock = async (
+  name: string,
+  questTrade: number,
+  wealthSimple: number,
+  id: number,
+  dividendFrequency?: number
+) => {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const response = await fetch(`${baseUrl}/api/db`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name,
+      quest_trade: questTrade,
+      wealth_simple: wealthSimple,
+      dividend_frequency: dividendFrequency,
+      id,
+    }),
+  });
+  return response.json();
+};
+
+export const deleteStock = async (stockName: string) => {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const response = await fetch(`${baseUrl}/api/db`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      stock_name: stockName,
     }),
   });
   return response.json();

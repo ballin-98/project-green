@@ -1,11 +1,16 @@
 "use client";
-
-import { Box, Typography } from "@mui/material";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Box, IconButton, Typography } from "@mui/material";
 import { ClientStockData, TradeInfo } from "../lib/types";
 import { useEffect, useState } from "react";
 import TotalCard from "./TotalCard";
 import ProgressBar from "./ProgressBar";
-import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridSortModel,
+} from "@mui/x-data-grid";
 import TradeList from "./TradeList";
 import {
   divFreqToString,
@@ -13,10 +18,15 @@ import {
   calculateYearlyDividends,
   calculateTotalAssets,
 } from "../lib/utils/dashboardHelpers";
+import { Edit, Delete } from "@mui/icons-material";
+import { deleteStock, updateStock } from "../lib/stockService";
+import { useRouter } from "next/navigation";
 
 interface DashboardProps {
   stocks: ClientStockData[];
   trades: TradeInfo[];
+  monthlyGoal: number;
+  yearlyGoal: number;
 }
 
 export default function Dashboard({ stocks, trades }: DashboardProps) {
@@ -24,6 +34,7 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
   const [assetValue, setAssetValue] = useState(0);
   const [yearlyDividends, setYearlyDividends] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
@@ -33,7 +44,29 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
     setYearlyDividends(calculateYearlyDividends(stocks));
   }, [stocks]);
 
+  const router = useRouter();
+
   if (!mounted) return null;
+
+  const handleEdit = async (params: any) => {
+    console.log("Handling Edit");
+    console.log(params);
+    const response = await updateStock(
+      params.name,
+      params.questTrade,
+      params.wealthSimple,
+      params.id,
+      params.dividendFrequency
+    );
+    console.log("Update response:", response);
+  };
+
+  const handleDelete = async (params: any) => {
+    setLoading(true);
+    await deleteStock(params.name);
+    router.refresh();
+    setLoading(false);
+  };
 
   const sortModel: GridSortModel = [{ field: "new", sort: "desc" }];
 
@@ -62,7 +95,46 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
         ((row.mostRecentDividend ?? 0) * row.quantity).toFixed(2),
       sortComparator: (v1, v2) => (Number(v1) ?? 0) - (Number(v2) ?? 0),
     },
+    {
+      field: "actions",
+      headerName: "",
+      sortable: false,
+      minWidth: 60,
+      flex: 0.5,
+      disableColumnMenu: true,
+
+      renderCell: (params: GridRenderCellParams) => (
+        <Box
+          sx={{
+            flexDirection: "row",
+            gap: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
+          }}
+        >
+          <IconButton
+            size="small"
+            color="primary"
+            onClick={() => handleEdit(params.row)}
+          >
+            <Edit fontSize="small" />
+          </IconButton>
+          <IconButton
+            size="small"
+            color="error"
+            onClick={() => handleDelete(params.row)}
+          >
+            <Delete fontSize="small" />
+          </IconButton>
+        </Box>
+      ),
+    },
   ];
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Box

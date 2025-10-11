@@ -2,7 +2,11 @@ import { StockData } from "@/app/lib/types";
 import { NextResponse } from "next/server";
 import yahooFinance from "yahoo-finance2";
 
-const stockDividendCache = { "CDAY.NE": 0.362, "BIGY.TO": 0.625 } as {
+const stockDividendCache = {
+  "CDAY.NE": 0.362,
+  "BIGY.TO": 0.625,
+  "SDAY.NE": 0.362,
+} as {
   [key: string]: number;
 };
 
