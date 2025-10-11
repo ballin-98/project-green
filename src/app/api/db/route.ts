@@ -10,6 +10,7 @@ export async function GET(): Promise<
 > {
   const supabase = await createClient();
 
+  // load all stocks
   const { data, error } = await supabase
     .from("stocks")
     .select("*")
@@ -71,11 +72,14 @@ export async function PUT(req: Request): Promise<NextResponse> {
     const supabase = await createClient();
 
     // Parse JSON body
-    const { id, name, wealth_simple, quest_trade, dividend_frequency } =
+    const { name, wealth_simple, quest_trade, dividend_frequency } =
       await req.json();
 
-    if (!id) {
-      return NextResponse.json({ error: "Missing stock ID" }, { status: 400 });
+    if (!name) {
+      return NextResponse.json(
+        { error: "Missing stock name" },
+        { status: 400 }
+      );
     }
 
     // Perform the update
@@ -87,7 +91,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
         quest_trade,
         dividend_frequency,
       })
-      .eq("id", id)
+      .eq("stock_name", name)
       .select();
 
     if (error) throw error;

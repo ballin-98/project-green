@@ -19,7 +19,7 @@ import {
   calculateTotalAssets,
 } from "../lib/utils/dashboardHelpers";
 import { Edit, Delete } from "@mui/icons-material";
-import { deleteStock, updateStock } from "../lib/stockService";
+import { deleteStock } from "../lib/stockService";
 import { useRouter } from "next/navigation";
 
 interface DashboardProps {
@@ -49,16 +49,10 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
   if (!mounted) return null;
 
   const handleEdit = async (params: any) => {
-    console.log("Handling Edit");
-    console.log(params);
-    const response = await updateStock(
-      params.name,
-      params.questTrade,
-      params.wealthSimple,
-      params.id,
-      params.dividendFrequency
+    console.log("calling handle edit");
+    router.push(
+      `/stock/edit?name=${params.name}&qt=${params.questTrade}&ws=${params.wealthSimple}&df=${params.dividendFrequency}`
     );
-    console.log("Update response:", response);
   };
 
   const handleDelete = async (params: any) => {
