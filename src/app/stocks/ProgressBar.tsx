@@ -16,8 +16,8 @@ export default function ProgressBar({
   const value = (current / goal) * 100 || 0;
 
   return (
-    <Box sx={{ width: "100%", margin: 1 }}>
-      <Typography variant="body2" color="text.primary">
+    <Box sx={{ width: "100%" }}>
+      <Typography variant="subtitle2" color="text.primary" sx={{ mb: 1 }}>
         {label}
       </Typography>
 
@@ -38,7 +38,7 @@ export default function ProgressBar({
               borderRadius: 6,
               backgroundColor: "#E0E0E0",
               "& .MuiLinearProgress-bar": {
-                backgroundColor: "#2ECC71",
+                backgroundColor: "#1976d2",
               },
             }}
           />

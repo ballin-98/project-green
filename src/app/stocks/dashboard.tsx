@@ -105,6 +105,7 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
             justifyContent: "center",
             alignItems: "center",
             display: "flex",
+            height: "100%",
           }}
         >
           <IconButton
