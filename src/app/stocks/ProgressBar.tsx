@@ -16,13 +16,27 @@ export default function ProgressBar({
   const value = (current / goal) * 100 || 0;
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Typography variant="subtitle2" color="text.primary" sx={{ mb: 1 }}>
+    <Box sx={{ width: "100%", minWidth: 300, height: "100%" }}>
+      {/* Small label/header */}
+      <Typography
+        variant="subtitle2"
+        sx={{
+          fontWeight: 600,
+          color: "text.secondary",
+          letterSpacing: 0.5,
+          textTransform: "uppercase",
+        }}
+      >
         {label}
       </Typography>
 
       {/* Progress bar with side numbers */}
-      <Box sx={{ display: "flex", alignItems: "center" }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
         {/* Start value */}
         <Typography variant="body2" sx={{ mr: 1 }}>
           $0

@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Box, IconButton, Typography } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import { ClientStockData, TradeInfo } from "../lib/types";
 import { useEffect, useState } from "react";
 import TotalCard from "./TotalCard";
@@ -139,8 +139,61 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
         height: "100vh",
         paddingY: 1,
         boxSizing: "border-box",
+        gap: 1,
       }}
     >
+      {/* Total Cards */}
+      <Box
+        sx={{
+          display: "flex",
+          gap: 2,
+          flexWrap: "wrap",
+          marginBottom: 2,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <TotalCard totalDividends={assetValue} label="Asset Value" />
+        <TotalCard
+          totalDividends={monthlyDividends}
+          label="Monthly Dividends"
+        />
+        <TotalCard totalDividends={yearlyDividends} label="Yearly Dividends" />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            boxShadow: 3,
+            p: 1,
+            borderRadius: 2,
+            height: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              gap: 2,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <ProgressBar
+              current={monthlyDividends}
+              goal={600}
+              label="Monthly Dividend"
+            />
+            <ProgressBar
+              current={yearlyDividends}
+              goal={8000}
+              label="Yearly Income"
+            />
+          </Box>
+        </Box>
+      </Box>
       <Box
         sx={{
           display: "flex",
@@ -155,24 +208,11 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
           sx={{
             display: "flex",
             flexDirection: "column",
-            flex: 7,
+            flex: 9,
             gap: 2,
             minHeight: 0,
           }}
         >
-          {/* Total Cards */}
-          <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-            <TotalCard totalDividends={assetValue} label="Asset Value" />
-            <TotalCard
-              totalDividends={monthlyDividends}
-              label="Monthly Dividends"
-            />
-            <TotalCard
-              totalDividends={yearlyDividends}
-              label="Yearly Dividends"
-            />
-          </Box>
-
           {/* DataGrid */}
           <Box
             sx={{
@@ -201,29 +241,6 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
             minWidth: { md: 300 },
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-              boxShadow: 3,
-              p: 2,
-              borderRadius: 2,
-              backgroundColor: "white",
-            }}
-          >
-            <Typography variant="h5">Goal Summary</Typography>
-            <ProgressBar
-              current={monthlyDividends}
-              goal={600}
-              label="Monthly Dividend"
-            />
-            <ProgressBar
-              current={yearlyDividends}
-              goal={8000}
-              label="Yearly Income"
-            />
-          </Box>
           <TradeList trades={trades} />
         </Box>
       </Box>

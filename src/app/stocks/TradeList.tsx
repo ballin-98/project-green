@@ -27,10 +27,9 @@ export default function TradeList({ trades }: TradeListProps) {
       sx={{
         display: "flex",
         flexDirection: "column",
-        marginTop: 2,
         paddingX: 2,
         borderRadius: 2,
-        height: 400, // fixed height
+        height: 500, // fixed height
         boxShadow: 3,
         backgroundColor: "white",
         overflowY: "auto", // ✅ makes the list scrollable

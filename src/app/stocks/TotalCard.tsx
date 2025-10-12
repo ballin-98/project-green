@@ -19,10 +19,10 @@ export default function TotalCard({
       sx={{
         boxShadow: 2,
         borderRadius: 3,
-        background: "linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)",
         flex: 1,
         minWidth: 180,
-        p: 2.5,
+        width: "100%",
+        p: 1,
         display: "flex",
         flexDirection: "column",
         alignItems: "flex-start",
@@ -32,6 +32,7 @@ export default function TotalCard({
           transform: "translateY(-3px)",
           boxShadow: 5,
         },
+        height: "100%",
       }}
     >
       {/* Small label/header */}
