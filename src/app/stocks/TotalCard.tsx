@@ -21,7 +21,7 @@ export default function TotalCard({
         borderRadius: 3,
         flex: 1,
         minWidth: 180,
-        width: "100%",
+        height: "100%",
         p: 1,
         display: "flex",
         flexDirection: "column",
@@ -32,7 +32,6 @@ export default function TotalCard({
           transform: "translateY(-3px)",
           boxShadow: 5,
         },
-        height: "100%",
       }}
     >
       {/* Small label/header */}

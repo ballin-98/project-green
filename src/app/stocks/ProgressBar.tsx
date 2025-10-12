@@ -16,7 +16,18 @@ export default function ProgressBar({
   const value = (current / goal) * 100 || 0;
 
   return (
-    <Box sx={{ width: "100%", minWidth: 300, height: "100%" }}>
+    <Box
+      sx={{
+        width: "100%",
+        minWidth: 300,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        gap: 1,
+        borderRadius: 3,
+      }}
+    >
       {/* Small label/header */}
       <Typography
         variant="subtitle2"
