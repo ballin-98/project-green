@@ -7,36 +7,58 @@ export interface TotalCardProps {
   label: string;
 }
 
-export default function TotalCard({ totalDividends, label }: TotalCardProps) {
+export default function TotalCard({
+  totalDividends,
+  label,
+}: {
+  totalDividends: number;
+  label: string;
+}) {
   return (
     <Box
       sx={{
-        boxShadow: 3,
-        borderRadius: 2,
-        backgroundColor: "white",
-        flex: 1, // allows it to grow/shrink in a flex row
-        minWidth: 150, // ensures it doesn't shrink too small
-        width: "100%", // fill available width in column wrap
+        boxShadow: 2,
+        borderRadius: 3,
+        flex: 1,
+        minWidth: 180,
+        height: "100%",
+        p: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        justifyContent: "center",
+        transition: "transform 0.2s ease, box-shadow 0.2s ease",
+        "&:hover": {
+          transform: "translateY(-3px)",
+          boxShadow: 5,
+        },
       }}
     >
-      <Box
+      {/* Small label/header */}
+      <Typography
+        variant="subtitle2"
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "left",
-          flexDirection: "column",
-          padding: 1,
-          gap: 1,
-          flex: 1,
+          fontWeight: 600,
+          color: "text.secondary",
+          letterSpacing: 0.5,
+          textTransform: "uppercase",
         }}
       >
-        <Typography variant="h6" component="span">
-          {label}
-        </Typography>
-        <Typography variant="h4" component="span">
-          ${totalDividends.toFixed(2)}
-        </Typography>
-      </Box>
+        {label}
+      </Typography>
+
+      {/* Large main value */}
+      <Typography
+        variant="h3"
+        sx={{
+          fontWeight: 700,
+          color: "#1976d2", // MUI primary blue
+          mt: 0.5,
+          lineHeight: 1.1,
+        }}
+      >
+        ${totalDividends.toFixed(2)}
+      </Typography>
     </Box>
   );
 }

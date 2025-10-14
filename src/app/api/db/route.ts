@@ -10,6 +10,7 @@ export async function GET(): Promise<
 > {
   const supabase = await createClient();
 
+  // load all stocks
   const { data, error } = await supabase
     .from("stocks")
     .select("*")
@@ -62,6 +63,72 @@ export async function POST(req: Request): Promise<NextResponse> {
     return NextResponse.json({ data });
   } catch (err: any) {
     console.error("Error inserting stock:", err);
+    return NextResponse.json({ error: err?.message }, { status: 500 });
+  }
+}
+
+export async function PUT(req: Request): Promise<NextResponse> {
+  try {
+    const supabase = await createClient();
+
+    // Parse JSON body
+    const { name, wealth_simple, quest_trade, dividend_frequency } =
+      await req.json();
+
+    if (!name) {
+      return NextResponse.json(
+        { error: "Missing stock name" },
+        { status: 400 }
+      );
+    }
+
+    // Perform the update
+    const { data, error } = await supabase
+      .from("stocks")
+      .update({
+        stock_name: name,
+        wealth_simple,
+        quest_trade,
+        dividend_frequency,
+      })
+      .eq("stock_name", name)
+      .select();
+
+    if (error) throw error;
+
+    return NextResponse.json({ data });
+  } catch (err: any) {
+    console.error("Error updating stock:", err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request): Promise<NextResponse> {
+  console.log("Entered DELETE method");
+  try {
+    const supabase = await createClient();
+    // Parse the JSON body from the request
+    const { stock_name } = await req.json();
+
+    if (!stock_name) {
+      return NextResponse.json(
+        { error: "Missing stock name" },
+        { status: 400 }
+      );
+    }
+
+    const { data, error } = await supabase
+      .from("stocks")
+      .delete()
+      .eq("stock_name", stock_name);
+
+    if (error) {
+      throw error;
+    }
+
+    return NextResponse.json({ data });
+  } catch (err: any) {
+    console.error("Error deleting stock:", err);
     return NextResponse.json({ error: err?.message }, { status: 500 });
   }
 }

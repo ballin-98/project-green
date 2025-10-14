@@ -1,11 +1,16 @@
 "use client";
-
-import { Box, Typography } from "@mui/material";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Box, IconButton } from "@mui/material";
 import { ClientStockData, TradeInfo } from "../lib/types";
 import { useEffect, useState } from "react";
 import TotalCard from "./TotalCard";
 import ProgressBar from "./ProgressBar";
-import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridSortModel,
+} from "@mui/x-data-grid";
 import TradeList from "./TradeList";
 import {
   divFreqToString,
@@ -13,10 +18,15 @@ import {
   calculateYearlyDividends,
   calculateTotalAssets,
 } from "../lib/utils/dashboardHelpers";
+import { Edit, Delete } from "@mui/icons-material";
+import { deleteStock } from "../lib/stockService";
+import { useRouter } from "next/navigation";
 
 interface DashboardProps {
   stocks: ClientStockData[];
   trades: TradeInfo[];
+  monthlyGoal: number;
+  yearlyGoal: number;
 }
 
 export default function Dashboard({ stocks, trades }: DashboardProps) {
@@ -24,6 +34,7 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
   const [assetValue, setAssetValue] = useState(0);
   const [yearlyDividends, setYearlyDividends] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
@@ -33,7 +44,23 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
     setYearlyDividends(calculateYearlyDividends(stocks));
   }, [stocks]);
 
+  const router = useRouter();
+
   if (!mounted) return null;
+
+  const handleEdit = async (params: any) => {
+    console.log("calling handle edit");
+    router.push(
+      `/stock/edit?name=${params.name}&qt=${params.questTrade}&ws=${params.wealthSimple}&df=${params.dividendFrequency}`
+    );
+  };
+
+  const handleDelete = async (params: any) => {
+    setLoading(true);
+    await deleteStock(params.name);
+    router.refresh();
+    setLoading(false);
+  };
 
   const sortModel: GridSortModel = [{ field: "new", sort: "desc" }];
 
@@ -62,7 +89,47 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
         ((row.mostRecentDividend ?? 0) * row.quantity).toFixed(2),
       sortComparator: (v1, v2) => (Number(v1) ?? 0) - (Number(v2) ?? 0),
     },
+    {
+      field: "actions",
+      headerName: "",
+      sortable: false,
+      minWidth: 60,
+      flex: 0.5,
+      disableColumnMenu: true,
+
+      renderCell: (params: GridRenderCellParams) => (
+        <Box
+          sx={{
+            flexDirection: "row",
+            gap: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
+            height: "100%",
+          }}
+        >
+          <IconButton
+            size="small"
+            color="primary"
+            onClick={() => handleEdit(params.row)}
+          >
+            <Edit fontSize="small" />
+          </IconButton>
+          <IconButton
+            size="small"
+            color="error"
+            onClick={() => handleDelete(params.row)}
+          >
+            <Delete fontSize="small" />
+          </IconButton>
+        </Box>
+      ),
+    },
   ];
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Box
@@ -72,6 +139,7 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
         height: "100vh",
         paddingY: 1,
         boxSizing: "border-box",
+        gap: 1,
       }}
     >
       <Box
@@ -88,13 +156,22 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
           sx={{
             display: "flex",
             flexDirection: "column",
-            flex: 7,
+            flex: 9,
             gap: 2,
             minHeight: 0,
           }}
         >
           {/* Total Cards */}
-          <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              flexWrap: "wrap",
+              marginBottom: 2,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <TotalCard totalDividends={assetValue} label="Asset Value" />
             <TotalCard
               totalDividends={monthlyDividends}
@@ -105,7 +182,6 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
               label="Yearly Dividends"
             />
           </Box>
-
           {/* DataGrid */}
           <Box
             sx={{
@@ -139,13 +215,13 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
               display: "flex",
               flexDirection: "column",
               gap: 2,
-              boxShadow: 3,
-              p: 2,
-              borderRadius: 2,
-              backgroundColor: "white",
+              justifyContent: "center",
+              alignItems: "center",
+              boxShadow: 2,
+              borderRadius: 3,
+              padding: 1,
             }}
           >
-            <Typography variant="h5">Goal Summary</Typography>
             <ProgressBar
               current={monthlyDividends}
               goal={600}
