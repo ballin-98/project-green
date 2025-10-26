@@ -224,7 +224,7 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
           >
             <ProgressBar
               current={monthlyDividends}
-              goal={600}
+              goal={700}
               label="Monthly Dividend"
             />
             <ProgressBar

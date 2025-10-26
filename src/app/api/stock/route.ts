@@ -23,7 +23,7 @@ export async function GET(req: Request): Promise<NextResponse<StockData[]>> {
   // function to get last month date as string
   try {
     const result = await yahooFinance.chart(ticker, {
-      period1: "2025-06-01",
+      period1: "2025-09-01",
       period2: new Date(),
       interval: "1d",
       events: "div",
