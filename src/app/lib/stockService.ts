@@ -2,32 +2,37 @@ import { ClientStockData } from "./types";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export const getStock = async (): Promise<ClientStockData[]> => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
-  const ownedStocksResponse = await fetch(`${baseUrl}/api/db`);
-  const ownedStocksResponseJson = await ownedStocksResponse.json();
+    const ownedStocksResponse = await fetch(`${baseUrl}/api/db`);
+    const ownedStocksResponseJson = await ownedStocksResponse.json();
 
-  const stockDetailPromises = ownedStocksResponseJson.map(
-    async (stock: any) => {
-      const stockDetails = await fetch(
-        `${baseUrl}/api/stock?ticker=${encodeURIComponent(stock.name)}`
-      );
-      const stockDetailsJson = await stockDetails.json();
+    const stockDetailPromises = ownedStocksResponseJson.map(
+      async (stock: any) => {
+        const stockDetails = await fetch(
+          `${baseUrl}/api/stock?ticker=${encodeURIComponent(stock.name)}`
+        );
+        const stockDetailsJson = await stockDetails.json();
 
-      return {
-        id: stock.id,
-        name: stock.name,
-        quantity: stock.quantity,
-        potential: stock.potential,
-        mostRecentDividend: stockDetailsJson[0].mostRecentDividend,
-        price: stockDetailsJson[0].price,
-        wealthSimple: stock.wealthSimple,
-        questTrade: stock.questTrade,
-        dividendFrequency: stock.dividendFrequency,
-      } as ClientStockData;
-    }
-  );
-  return await Promise.all(stockDetailPromises);
+        return {
+          id: stock.id,
+          name: stock.name,
+          quantity: stock.quantity,
+          potential: stock.potential,
+          mostRecentDividend: stockDetailsJson[0].mostRecentDividend,
+          price: stockDetailsJson[0].price,
+          wealthSimple: stock.wealthSimple,
+          questTrade: stock.questTrade,
+          dividendFrequency: stock.dividendFrequency,
+        } as ClientStockData;
+      }
+    );
+    return await Promise.all(stockDetailPromises);
+  } catch (error) {
+    console.error("Error fetching stock data:", error);
+    return [];
+  }
 };
 
 export const addNewStock = async (
@@ -36,20 +41,24 @@ export const addNewStock = async (
   wealthSimple: number,
   dividendFrequency?: number
 ) => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const response = await fetch(`${baseUrl}/api/db`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      name,
-      quest_trade: questTrade,
-      wealth_simple: wealthSimple,
-      dividend_frequency: dividendFrequency,
-    }),
-  });
-  return response.json();
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const response = await fetch(`${baseUrl}/api/db`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        quest_trade: questTrade,
+        wealth_simple: wealthSimple,
+        dividend_frequency: dividendFrequency,
+      }),
+    });
+    return response.json();
+  } catch (error) {
+    console.error("Error adding new stock:", error);
+  }
 };
 
 export const updateStock = async (
@@ -59,43 +68,56 @@ export const updateStock = async (
   id: number,
   dividendFrequency?: number
 ) => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const response = await fetch(`${baseUrl}/api/db`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      name,
-      quest_trade: questTrade,
-      wealth_simple: wealthSimple,
-      dividend_frequency: dividendFrequency,
-      id,
-    }),
-  });
-  return response.json();
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const response = await fetch(`${baseUrl}/api/db`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        quest_trade: questTrade,
+        wealth_simple: wealthSimple,
+        dividend_frequency: dividendFrequency,
+        id,
+      }),
+    });
+    return response.json();
+  } catch (error) {
+    console.error("Error updating stock:", error);
+  }
 };
 
 export const deleteStock = async (stockName: string) => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const response = await fetch(`${baseUrl}/api/db`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      stock_name: stockName,
-    }),
-  });
-  return response.json();
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const response = await fetch(`${baseUrl}/api/db`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        stock_name: stockName,
+      }),
+    });
+    return response.json();
+  } catch (error) {
+    console.error("Error deleting stock:", error);
+  }
 };
 
 export const getTrades = async () => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const response = await fetch(`${baseUrl}/api/trades`, {
-    cache: "no-store",
-  });
-  return response.json();
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const response = await fetch(`${baseUrl}/api/trades`, {
+      cache: "no-store",
+    });
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching trades:", error);
+    return [];
+  }
 };
 
 export const addTrade = async (
@@ -103,17 +125,21 @@ export const addTrade = async (
   shares: number,
   profit: number
 ) => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const response = await fetch(`${baseUrl}/api/trades`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      stock_name: stock_name,
-      shares: shares,
-      profit: profit,
-    }),
-  });
-  return response.json();
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const response = await fetch(`${baseUrl}/api/trades`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        stock_name: stock_name,
+        shares: shares,
+        profit: profit,
+      }),
+    });
+    return response.json();
+  } catch (error) {
+    console.error("Error adding trade:", error);
+  }
 };
