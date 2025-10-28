@@ -20,15 +20,15 @@ const getBaseUrl = () => {
 
 export const getStock = async (): Promise<ClientStockData[]> => {
   try {
-    const baseUrl = getBaseUrl();
+    // const baseUrl = getBaseUrl();
 
-    const ownedStocksResponse = await fetch(`${baseUrl}/api/db`);
+    const ownedStocksResponse = await fetch(`/api/db`);
     const ownedStocksResponseJson = await ownedStocksResponse.json();
 
     const stockDetailPromises = ownedStocksResponseJson.map(
       async (stock: any) => {
         const stockDetails = await fetch(
-          `${baseUrl}/api/stock?ticker=${encodeURIComponent(stock.name)}`
+          `/api/stock?ticker=${encodeURIComponent(stock.name)}`
         );
         const stockDetailsJson = await stockDetails.json();
 
@@ -59,8 +59,8 @@ export const addNewStock = async (
   dividendFrequency?: number
 ) => {
   try {
-    const baseUrl = getBaseUrl();
-    const response = await fetch(`${baseUrl}/api/db`, {
+    // const baseUrl = getBaseUrl();
+    const response = await fetch(`/api/db`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -86,8 +86,8 @@ export const updateStock = async (
   dividendFrequency?: number
 ) => {
   try {
-    const baseUrl = getBaseUrl();
-    const response = await fetch(`${baseUrl}/api/db`, {
+    // const baseUrl = getBaseUrl();
+    const response = await fetch(`/api/db`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -108,8 +108,8 @@ export const updateStock = async (
 
 export const deleteStock = async (stockName: string) => {
   try {
-    const baseUrl = getBaseUrl();
-    const response = await fetch(`${baseUrl}/api/db`, {
+    // const baseUrl = getBaseUrl();
+    const response = await fetch(`/api/db`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -126,8 +126,8 @@ export const deleteStock = async (stockName: string) => {
 
 export const getTrades = async () => {
   try {
-    const baseUrl = getBaseUrl();
-    const response = await fetch(`${baseUrl}/api/trades`, {
+    // const baseUrl = getBaseUrl();
+    const response = await fetch(`/api/trades`, {
       cache: "no-store",
     });
     return response.json();
@@ -143,8 +143,8 @@ export const addTrade = async (
   profit: number
 ) => {
   try {
-    const baseUrl = getBaseUrl();
-    const response = await fetch(`${baseUrl}/api/trades`, {
+    // const baseUrl = getBaseUrl();
+    const response = await fetch(`/api/trades`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
