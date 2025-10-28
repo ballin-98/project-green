@@ -1,22 +1,22 @@
 import { ClientStockData } from "./types";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-const getBaseUrl = () => {
-  console.log("here");
-  const baseUrl =
-    process.env.NODE_ENV === "production"
-      ? `https://${process.env.VERCEL_URL}` // production
-      : "http://localhost:3000";
-  console.log(
-    "[getBaseUrl] NODE_ENV:",
-    process.env.NODE_ENV,
-    "VERCEL_URL:",
-    process.env.VERCEL_URL,
-    "baseUrl:",
-    baseUrl
-  );
-  return baseUrl;
-};
+// const getBaseUrl = () => {
+//   console.log("here");
+//   const baseUrl =
+//     process.env.NODE_ENV === "production"
+//       ? `https://${process.env.VERCEL_URL}` // production
+//       : "http://localhost:3000";
+//   console.log(
+//     "[getBaseUrl] NODE_ENV:",
+//     process.env.NODE_ENV,
+//     "VERCEL_URL:",
+//     process.env.VERCEL_URL,
+//     "baseUrl:",
+//     baseUrl
+//   );
+//   return baseUrl;
+// };
 
 export const getStock = async (): Promise<ClientStockData[]> => {
   try {
