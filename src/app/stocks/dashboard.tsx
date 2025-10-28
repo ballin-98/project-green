@@ -19,37 +19,41 @@ import {
   calculateTotalAssets,
 } from "../lib/utils/dashboardHelpers";
 import { Edit, Delete } from "@mui/icons-material";
-import { deleteStock } from "../lib/stockService";
+import { deleteStock, getStock, getTrades } from "../lib/stockService";
 import { useRouter } from "next/navigation";
 
-interface DashboardProps {
-  stocks: ClientStockData[];
-  trades: TradeInfo[];
-  monthlyGoal: number;
-  yearlyGoal: number;
-}
-
-export default function Dashboard({ stocks, trades }: DashboardProps) {
+export default function Dashboard() {
   const [monthlyDividends, setMonthlyDividends] = useState(0);
   const [assetValue, setAssetValue] = useState(0);
   const [yearlyDividends, setYearlyDividends] = useState(0);
-  const [mounted, setMounted] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => setMounted(true), []);
-
-  useEffect(() => {
-    setAssetValue(calculateTotalAssets(stocks));
-    setMonthlyDividends(calculateMonthlyDividends(stocks));
-    setYearlyDividends(calculateYearlyDividends(stocks));
-  }, [stocks]);
-
+  const [stocks, setStocks] = useState<ClientStockData[]>([]);
+  const [trades, setTrades] = useState<TradeInfo[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  if (!mounted) return null;
+  // ✅ Client-side data fetching
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [stockData, tradeData] = await Promise.all([
+          getStock(),
+          getTrades(),
+        ]);
+        setStocks(stockData);
+        setTrades(tradeData);
+        setAssetValue(calculateTotalAssets(stockData));
+        setMonthlyDividends(calculateMonthlyDividends(stockData));
+        setYearlyDividends(calculateYearlyDividends(stockData));
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
-  const handleEdit = async (params: any) => {
-    console.log("calling handle edit");
+  const handleEdit = (params: any) => {
     router.push(
       `/stock/edit?name=${params.name}&qt=${params.questTrade}&ws=${params.wealthSimple}&df=${params.dividendFrequency}`
     );
@@ -96,7 +100,6 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
       minWidth: 60,
       flex: 0.5,
       disableColumnMenu: true,
-
       renderCell: (params: GridRenderCellParams) => (
         <Box
           sx={{
@@ -147,8 +150,8 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
           display: "flex",
           flex: 1,
           gap: 2,
-          minHeight: 0, // crucial for flex children to shrink
-          flexDirection: { xs: "column", md: "row" }, // responsive stacking
+          minHeight: 0,
+          flexDirection: { xs: "column", md: "row" },
         }}
       >
         {/* Left column */}
@@ -182,6 +185,7 @@ export default function Dashboard({ stocks, trades }: DashboardProps) {
               label="Yearly Dividends"
             />
           </Box>
+
           {/* DataGrid */}
           <Box
             sx={{
