@@ -3,7 +3,9 @@ import { ClientStockData } from "./types";
 
 export const getStock = async (): Promise<ClientStockData[]> => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000";
 
     const ownedStocksResponse = await fetch(`${baseUrl}/api/db`);
     const ownedStocksResponseJson = await ownedStocksResponse.json();
@@ -42,7 +44,9 @@ export const addNewStock = async (
   dividendFrequency?: number
 ) => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000";
     const response = await fetch(`${baseUrl}/api/db`, {
       method: "POST",
       headers: {
@@ -69,7 +73,9 @@ export const updateStock = async (
   dividendFrequency?: number
 ) => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000";
     const response = await fetch(`${baseUrl}/api/db`, {
       method: "PUT",
       headers: {
@@ -91,7 +97,9 @@ export const updateStock = async (
 
 export const deleteStock = async (stockName: string) => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000";
     const response = await fetch(`${baseUrl}/api/db`, {
       method: "DELETE",
       headers: {
@@ -109,7 +117,9 @@ export const deleteStock = async (stockName: string) => {
 
 export const getTrades = async () => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000";
     const response = await fetch(`${baseUrl}/api/trades`, {
       cache: "no-store",
     });
@@ -126,7 +136,9 @@ export const addTrade = async (
   profit: number
 ) => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000";
     const response = await fetch(`${baseUrl}/api/trades`, {
       method: "POST",
       headers: {
