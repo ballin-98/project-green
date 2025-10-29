@@ -10,7 +10,8 @@ export default function EditStockForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  useEffect(() => setMounted(true), []);
+  console.log("trying to load");
+  // useEffect(() => setMounted(true), []);
   useEffect(() => {
     // Load query parameters once component mounts
     const name = searchParams.get("name");
@@ -28,8 +29,8 @@ export default function EditStockForm() {
   const [wealthSimple, setWealthSimple] = useState<string>("");
   const [questTrade, setQuestTrade] = useState<string>("");
   const [dividendFrequency, setDividendFrequency] = useState<string>("");
-  const [mounted, setMounted] = useState(false);
-  if (!mounted) return null; // render nothing until mounted
+  // const [mounted, setMounted] = useState(false);
+  // if (!mounted) return null; // render nothing until mounted
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
