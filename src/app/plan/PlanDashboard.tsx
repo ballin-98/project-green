@@ -1,7 +1,6 @@
 "use client";
 
 import { Box, Typography } from "@mui/material";
-import { ClientStockData } from "../lib/types";
 import { useEffect, useState } from "react";
 import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
 import ProgressBar from "../stocks/ProgressBar";
@@ -13,15 +12,15 @@ import {
   calculateTotalAssets,
   calculateCashNeeded,
 } from "../lib/utils/dashboardHelpers";
+import { getStock } from "../lib/stockService";
+import { ClientStockData } from "../lib/types";
 
 interface DashboardProps {
-  stocks: ClientStockData[];
   monthlyGoal?: number;
   yearlyGoal?: number;
 }
 
 export default function PlanDashboard({
-  stocks,
   monthlyGoal,
   yearlyGoal,
 }: DashboardProps) {
@@ -29,10 +28,22 @@ export default function PlanDashboard({
   const [assetValue, setAssetValue] = useState(0);
   const [yearlyDividends, setYearlyDividends] = useState(0);
   const [mounted, setMounted] = useState(false);
-  const [potentialStocks, setPotentialStocks] = useState(stocks);
+  const [potentialStocks, setPotentialStocks] = useState<ClientStockData[]>([]);
   const [cash, setCash] = useState(0);
 
   useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getStock();
+        setPotentialStocks(data);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     setAssetValue(calculateTotalAssets(potentialStocks));
