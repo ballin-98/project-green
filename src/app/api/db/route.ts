@@ -98,13 +98,11 @@ export async function PUT(req: Request): Promise<NextResponse> {
 
     return NextResponse.json({ data });
   } catch (err: any) {
-    console.error("Error updating stock:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
 
 export async function DELETE(req: Request): Promise<NextResponse> {
-  console.log("Entered DELETE method");
   try {
     const supabase = await createClient();
     // Parse the JSON body from the request

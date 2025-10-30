@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Box, IconButton } from "@mui/material";
+import { Box, Chip, IconButton } from "@mui/material";
 import { ClientStockData, TradeInfo } from "../lib/types";
 import { useEffect, useState } from "react";
 import TotalCard from "./TotalCard";
@@ -78,6 +78,28 @@ export default function Dashboard() {
       flex: 1,
       minWidth: 100,
       valueGetter: (_, row) => divFreqToString(row.dividendFrequency),
+      renderCell: (params) => {
+        const value = params.value;
+
+        const colors: Record<string, { bg: string }> = {
+          Monthly: { bg: "#9cf09eff" },
+          Quarterly: { bg: "#D1B3FF" },
+        };
+
+        return (
+          <Box>
+            <Chip
+              label={value}
+              sx={{
+                backgroundColor: colors[value]?.bg || "#E0E0E0",
+                fontWeight: 500,
+                height: 32,
+              }}
+              size="medium"
+            />
+          </Box>
+        );
+      },
     },
     {
       field: "mostRecentDividend",
