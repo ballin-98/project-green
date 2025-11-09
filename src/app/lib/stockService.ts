@@ -1,5 +1,16 @@
-import { ClientStockData } from "./types";
+import { ClientStockData, GoalInfo } from "./types";
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+let cachedGoals: GoalInfo | undefined = undefined;
+
+// this will need to be updated later in case the goals change => invalidate cache
+// for now this is fine
+const handleCachedGoals = (goalsData?: GoalInfo) => {
+  if (!cachedGoals && goalsData) {
+    cachedGoals = goalsData;
+  }
+  return cachedGoals;
+};
 
 export const getStock = async (): Promise<ClientStockData[]> => {
   try {
@@ -40,7 +51,6 @@ export const addNewStock = async (
   dividendFrequency?: number
 ) => {
   try {
-    // const baseUrl = getBaseUrl();
     const response = await fetch(`/api/db`, {
       method: "POST",
       headers: {
@@ -67,7 +77,6 @@ export const updateStock = async (
   dividendFrequency?: number
 ) => {
   try {
-    // const baseUrl = getBaseUrl();
     const response = await fetch(`/api/db`, {
       method: "PUT",
       headers: {
@@ -89,7 +98,6 @@ export const updateStock = async (
 
 export const deleteStock = async (stockName: string) => {
   try {
-    // const baseUrl = getBaseUrl();
     const response = await fetch(`/api/db`, {
       method: "DELETE",
       headers: {
@@ -107,7 +115,6 @@ export const deleteStock = async (stockName: string) => {
 
 export const getTrades = async () => {
   try {
-    // const baseUrl = getBaseUrl();
     const response = await fetch(`/api/trades`, {
       cache: "no-store",
     });
@@ -124,7 +131,6 @@ export const addTrade = async (
   profit: number
 ) => {
   try {
-    // const baseUrl = getBaseUrl();
     const response = await fetch(`/api/trades`, {
       method: "POST",
       headers: {
@@ -139,5 +145,23 @@ export const addTrade = async (
     return response.json();
   } catch (error) {
     console.error("Error adding trade:", error);
+  }
+};
+
+export const getGoals = async () => {
+  try {
+    const goals = handleCachedGoals();
+    if (goals) {
+      return goals;
+    }
+    const response = await fetch(`/api/goals`, {
+      cache: "no-store",
+    });
+    const jsonResponse = await response.json();
+    handleCachedGoals(jsonResponse.goals);
+    return jsonResponse.goals;
+  } catch (error) {
+    console.error("Error fetching trades:", error);
+    return [];
   }
 };
