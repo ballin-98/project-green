@@ -12,24 +12,20 @@ import {
   calculateTotalAssets,
   calculateCashNeeded,
 } from "../lib/utils/dashboardHelpers";
-import { getStock } from "../lib/stockService";
-import { ClientStockData } from "../lib/types";
+import { getGoals, getStock } from "../lib/stockService";
+import { ClientStockData, GoalInfo } from "../lib/types";
 
-interface DashboardProps {
-  monthlyGoal?: number;
-  yearlyGoal?: number;
-}
-
-export default function PlanDashboard({
-  monthlyGoal,
-  yearlyGoal,
-}: DashboardProps) {
+export default function PlanDashboard() {
   const [monthlyDividends, setMonthlyDividends] = useState(0);
   const [assetValue, setAssetValue] = useState(0);
   const [yearlyDividends, setYearlyDividends] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [potentialStocks, setPotentialStocks] = useState<ClientStockData[]>([]);
   const [cash, setCash] = useState(0);
+  const [goals, setGoals] = useState<GoalInfo>({
+    longTermGoal: 0,
+    shortTermGoal: 0,
+  });
 
   useEffect(() => setMounted(true), []);
 
@@ -38,6 +34,8 @@ export default function PlanDashboard({
       try {
         const data = await getStock();
         setPotentialStocks(data);
+        const goalData = await getGoals();
+        setGoals(goalData);
       } catch (err) {
         console.error("Error fetching data:", err);
       }
@@ -188,12 +186,12 @@ export default function PlanDashboard({
             <Typography variant="h5">Goal Summary</Typography>
             <ProgressBar
               current={monthlyDividends}
-              goal={monthlyGoal ?? 0}
+              goal={Number(goals.shortTermGoal) ?? 0}
               label="Monthly Dividend"
             />
             <ProgressBar
               current={yearlyDividends}
-              goal={yearlyGoal ?? 0}
+              goal={Number(goals.longTermGoal) ?? 0}
               label="Yearly Income"
             />
           </Box>
