@@ -28,3 +28,8 @@ export interface TradeInfo {
   profit: number;
   date: string; // ISO string
 }
+
+export interface GoalInfo {
+  longTermGoal: number;
+  shortTermGoal: number;
+}

@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, Chip, IconButton } from "@mui/material";
-import { ClientStockData, TradeInfo } from "../lib/types";
+import { ClientStockData, GoalInfo, TradeInfo } from "../lib/types";
 import { useEffect, useState } from "react";
 import TotalCard from "./TotalCard";
 import ProgressBar from "./ProgressBar";
@@ -19,7 +19,12 @@ import {
   calculateTotalAssets,
 } from "../lib/utils/dashboardHelpers";
 import { Edit, Delete } from "@mui/icons-material";
-import { deleteStock, getStock, getTrades } from "../lib/stockService";
+import {
+  deleteStock,
+  getStock,
+  getTrades,
+  getGoals,
+} from "../lib/stockService";
 import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
@@ -29,18 +34,24 @@ export default function Dashboard() {
   const [stocks, setStocks] = useState<ClientStockData[]>([]);
   const [trades, setTrades] = useState<TradeInfo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [goals, setGoals] = useState<GoalInfo>({
+    longTermGoal: 0,
+    shortTermGoal: 0,
+  });
   const router = useRouter();
 
   // ✅ Client-side data fetching
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [stockData, tradeData] = await Promise.all([
+        const [stockData, tradeData, goalData] = await Promise.all([
           getStock(),
           getTrades(),
+          getGoals(),
         ]);
         setStocks(stockData);
         setTrades(tradeData);
+        setGoals(goalData);
         setAssetValue(calculateTotalAssets(stockData));
         setMonthlyDividends(calculateMonthlyDividends(stockData));
         setYearlyDividends(calculateYearlyDividends(stockData));
@@ -250,12 +261,12 @@ export default function Dashboard() {
           >
             <ProgressBar
               current={monthlyDividends}
-              goal={750}
+              goal={Number(goals.shortTermGoal)}
               label="Monthly Dividend"
             />
             <ProgressBar
               current={yearlyDividends}
-              goal={8000}
+              goal={Number(goals.longTermGoal)}
               label="Yearly Income"
             />
           </Box>

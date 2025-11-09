@@ -40,7 +40,6 @@ export const addNewStock = async (
   dividendFrequency?: number
 ) => {
   try {
-    // const baseUrl = getBaseUrl();
     const response = await fetch(`/api/db`, {
       method: "POST",
       headers: {
@@ -67,7 +66,6 @@ export const updateStock = async (
   dividendFrequency?: number
 ) => {
   try {
-    // const baseUrl = getBaseUrl();
     const response = await fetch(`/api/db`, {
       method: "PUT",
       headers: {
@@ -89,7 +87,6 @@ export const updateStock = async (
 
 export const deleteStock = async (stockName: string) => {
   try {
-    // const baseUrl = getBaseUrl();
     const response = await fetch(`/api/db`, {
       method: "DELETE",
       headers: {
@@ -107,7 +104,6 @@ export const deleteStock = async (stockName: string) => {
 
 export const getTrades = async () => {
   try {
-    // const baseUrl = getBaseUrl();
     const response = await fetch(`/api/trades`, {
       cache: "no-store",
     });
@@ -124,7 +120,6 @@ export const addTrade = async (
   profit: number
 ) => {
   try {
-    // const baseUrl = getBaseUrl();
     const response = await fetch(`/api/trades`, {
       method: "POST",
       headers: {
@@ -139,5 +134,18 @@ export const addTrade = async (
     return response.json();
   } catch (error) {
     console.error("Error adding trade:", error);
+  }
+};
+
+export const getGoals = async () => {
+  try {
+    const response = await fetch(`/api/goals`, {
+      cache: "no-store",
+    });
+    const jsonResponse = await response.json();
+    return jsonResponse.goals;
+  } catch (error) {
+    console.error("Error fetching trades:", error);
+    return [];
   }
 };
