@@ -2,10 +2,17 @@ import { StockData } from "@/app/lib/types";
 import { NextResponse } from "next/server";
 import yahooFinance from "yahoo-finance2";
 
+const getFirstOfMonth = (monthsBack: number): string => {
+  const date = new Date();
+  date.setMonth(date.getMonth() - monthsBack);
+  date.setDate(1);
+  return date.toISOString().split("T")[0];
+};
+
 const stockDividendCache = {
-  "CDAY.NE": 0.362,
+  "CDAY.NE": 0.36,
   "BIGY.TO": 0.625,
-  "SDAY.NE": 0.362,
+  "SDAY.NE": 0.364,
 } as {
   [key: string]: number;
 };
@@ -20,10 +27,11 @@ export async function GET(req: Request): Promise<NextResponse<StockData[]>> {
     return NextResponse.json(stockResponse);
   }
 
+  const firstOfLastMonth = getFirstOfMonth(2);
   // function to get last month date as string
   try {
     const result = await yahooFinance.chart(ticker, {
-      period1: "2025-06-01",
+      period1: firstOfLastMonth,
       period2: new Date(),
       interval: "1d",
       events: "div",
