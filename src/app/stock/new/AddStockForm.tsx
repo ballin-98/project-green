@@ -8,25 +8,41 @@ import { ArrowLeft } from "@mui/icons-material";
 import { useUser } from "@/app/context/UserContext";
 
 export default function StockForm() {
-  const [stockName, setStockName] = useState("");
-  const [wealthSimple, setWealthSimple] = useState<string>("");
-  const [questTrade, setQuestTrade] = useState<string>("");
-  const [dividendFrequency, setDividendFrequency] = useState<string>("");
-  const { user } = useUser();
+  const initialFormState = {
+    stockName: "",
+    wealthSimple: "",
+    questTrade: "",
+    dividendFrequency: "",
+  };
 
+  const [form, setForm] = useState(initialFormState);
+  const { user } = useUser();
   const router = useRouter();
+
+  const handleChange = (field: string, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!user) return;
+
     await addNewStock(
-      user?.id ?? "",
-      stockName,
-      Number(questTrade), // questTrade first
-      Number(wealthSimple), // then wealthSimple
-      Number(dividendFrequency) // dividendFrequency last
+      user.id,
+      form.stockName,
+      Number(form.questTrade),
+      Number(form.wealthSimple),
+      Number(form.dividendFrequency)
     );
-    router.push("/stock/new");
+
+    console.log("Finished adding stock");
+
+    // Reset form values
+    setForm(initialFormState);
+
+    // Optional: navigate after submission
+    // router.push("/stock/new");
   };
 
   return (
@@ -50,32 +66,32 @@ export default function StockForm() {
 
         <TextField
           label="Stock Name"
-          value={stockName}
-          onChange={(e) => setStockName(e.target.value)}
+          value={form.stockName}
+          onChange={(e) => handleChange("stockName", e.target.value)}
           required
         />
 
         <TextField
           label="Wealth Simple ($)"
           type="number"
-          value={wealthSimple}
-          onChange={(e) => setWealthSimple(e.target.value)}
+          value={form.wealthSimple}
+          onChange={(e) => handleChange("wealthSimple", e.target.value)}
           required
         />
 
         <TextField
           label="Quest Trade ($)"
           type="number"
-          value={questTrade}
-          onChange={(e) => setQuestTrade(e.target.value)}
+          value={form.questTrade}
+          onChange={(e) => handleChange("questTrade", e.target.value)}
           required
         />
 
         <TextField
           label="Dividend Frequency (per year)"
           type="number"
-          value={dividendFrequency}
-          onChange={(e) => setDividendFrequency(e.target.value)}
+          value={form.dividendFrequency}
+          onChange={(e) => handleChange("dividendFrequency", e.target.value)}
           required
         />
 
@@ -83,11 +99,12 @@ export default function StockForm() {
           Add Stock
         </Button>
       </Box>
+
       <Button
         variant="contained"
         sx={{ padding: 1, mt: 2 }}
         startIcon={<ArrowLeft />}
-        onClick={() => router.push("/")}
+        onClick={() => router.push("/stocks")}
       >
         Back
       </Button>
