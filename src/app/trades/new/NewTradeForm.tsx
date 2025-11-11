@@ -5,12 +5,14 @@ import { Box, TextField, Button, Typography } from "@mui/material";
 import { addTrade } from "@/app/lib/stockService";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "@mui/icons-material";
+import { useUser } from "@/app/context/UserContext";
 
 export default function TradeForm() {
   const [stockName, setStockName] = useState("");
   const [shares, setShares] = useState<string>("");
   const [profit, setProfit] = useState<string>("");
   const [mounted, setMounted] = useState(false);
+  const { user } = useUser();
 
   useEffect(() => setMounted(true), []);
   const router = useRouter();
@@ -20,7 +22,7 @@ export default function TradeForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    await addTrade(stockName, Number(shares), Number(profit));
+    await addTrade(user?.id ?? "", stockName, Number(shares), Number(profit));
 
     router.push("/");
   };
