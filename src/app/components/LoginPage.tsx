@@ -14,7 +14,7 @@ export default function LoginPage() {
       },
     });
     if (error) {
-      console.error("Error during Google login:", error);
+      console.error("Error during Google login...", error);
       return;
     }
     window.location.href = data.url!;
