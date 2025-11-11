@@ -60,6 +60,9 @@ export default function Dashboard() {
         ]);
         setStocks(stockData);
         setTrades(tradeData);
+        if (goalData) {
+          setGoals(goalData);
+        }
         setGoals(goalData);
         setAssetValue(calculateTotalAssets(stockData));
         setMonthlyDividends(calculateMonthlyDividends(stockData));

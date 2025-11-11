@@ -38,7 +38,9 @@ export default function PlanDashboard() {
         const data = await getStock(user.id ?? "");
         setPotentialStocks(data);
         const goalData = await getGoals(user.id ?? "");
-        setGoals(goalData);
+        if (goalData) {
+          setGoals(goalData);
+        }
       } catch (err) {
         console.error("Error fetching data:", err);
       }
