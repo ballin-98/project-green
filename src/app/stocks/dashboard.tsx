@@ -26,6 +26,12 @@ import {
   getGoals,
 } from "../lib/stockService";
 import { useRouter } from "next/navigation";
+import { useUser } from "../context/UserContext";
+
+export interface AppUser {
+  email: string;
+  id: string;
+}
 
 export default function Dashboard() {
   const [monthlyDividends, setMonthlyDividends] = useState(0);
@@ -35,19 +41,22 @@ export default function Dashboard() {
   const [trades, setTrades] = useState<TradeInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [goals, setGoals] = useState<GoalInfo>({
-    longTermGoal: 0,
-    shortTermGoal: 0,
+    longTermGoal: 8000,
+    shortTermGoal: 600,
   });
   const router = useRouter();
+  // const [user, setUser] = useState<AppUser | undefined>(undefined);
+  const { user } = useUser();
 
-  // ✅ Client-side data fetching
+  // run this once we have a user
   useEffect(() => {
+    if (!user) return;
     const fetchData = async () => {
       try {
         const [stockData, tradeData, goalData] = await Promise.all([
-          getStock(),
-          getTrades(),
-          getGoals(),
+          getStock(user?.id ?? ""),
+          getTrades(user?.id ?? ""),
+          getGoals(user?.id ?? ""),
         ]);
         setStocks(stockData);
         setTrades(tradeData);
@@ -62,7 +71,7 @@ export default function Dashboard() {
       }
     };
     fetchData();
-  }, []);
+  }, [user]);
 
   const handleEdit = (params: any) => {
     router.push(
@@ -72,7 +81,7 @@ export default function Dashboard() {
 
   const handleDelete = async (params: any) => {
     setLoading(true);
-    await deleteStock(params.name);
+    await deleteStock(user?.id ?? "", params.name);
     router.refresh();
     setLoading(false);
   };

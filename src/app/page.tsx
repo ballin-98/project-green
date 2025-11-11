@@ -1,5 +1,5 @@
-import StocksPage from "./stocks/page";
+import LoginPage from "./components/LoginPage";
 
 export default function Home() {
-  return <StocksPage />;
+  return <LoginPage />;
 }

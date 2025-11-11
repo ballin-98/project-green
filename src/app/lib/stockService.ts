@@ -12,9 +12,9 @@ const handleCachedGoals = (goalsData?: GoalInfo) => {
   return cachedGoals;
 };
 
-export const getStock = async (): Promise<ClientStockData[]> => {
+export const getStock = async (userId: string): Promise<ClientStockData[]> => {
   try {
-    const ownedStocksResponse = await fetch(`/api/db`);
+    const ownedStocksResponse = await fetch(`/api/db?userId=${userId}`);
     const ownedStocksResponseJson = await ownedStocksResponse.json();
 
     const stockDetailPromises = ownedStocksResponseJson.map(
@@ -45,6 +45,7 @@ export const getStock = async (): Promise<ClientStockData[]> => {
 };
 
 export const addNewStock = async (
+  userId: string,
   name: string,
   questTrade: number,
   wealthSimple: number,
@@ -57,6 +58,7 @@ export const addNewStock = async (
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        user_id: userId,
         name,
         quest_trade: questTrade,
         wealth_simple: wealthSimple,
@@ -70,6 +72,7 @@ export const addNewStock = async (
 };
 
 export const updateStock = async (
+  userId: string,
   name: string,
   questTrade: number,
   wealthSimple: number,
@@ -83,6 +86,7 @@ export const updateStock = async (
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        user_id: userId,
         name,
         quest_trade: questTrade,
         wealth_simple: wealthSimple,
@@ -96,7 +100,7 @@ export const updateStock = async (
   }
 };
 
-export const deleteStock = async (stockName: string) => {
+export const deleteStock = async (userId: string, stockName: string) => {
   try {
     const response = await fetch(`/api/db`, {
       method: "DELETE",
@@ -104,6 +108,7 @@ export const deleteStock = async (stockName: string) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        user_id: userId,
         stock_name: stockName,
       }),
     });
@@ -113,9 +118,9 @@ export const deleteStock = async (stockName: string) => {
   }
 };
 
-export const getTrades = async () => {
+export const getTrades = async (userId: string) => {
   try {
-    const response = await fetch(`/api/trades`, {
+    const response = await fetch(`/api/trades?userId=${userId}`, {
       cache: "no-store",
     });
     return response.json();
@@ -126,6 +131,7 @@ export const getTrades = async () => {
 };
 
 export const addTrade = async (
+  userId: string,
   stock_name: string,
   shares: number,
   profit: number
@@ -137,6 +143,7 @@ export const addTrade = async (
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        user_id: userId,
         stock_name: stock_name,
         shares: shares,
         profit: profit,
@@ -148,13 +155,13 @@ export const addTrade = async (
   }
 };
 
-export const getGoals = async () => {
+export const getGoals = async (userId: string) => {
   try {
     const goals = handleCachedGoals();
     if (goals) {
       return goals;
     }
-    const response = await fetch(`/api/goals`, {
+    const response = await fetch(`/api/goals?userId=${userId}`, {
       cache: "no-store",
     });
     const jsonResponse = await response.json();
