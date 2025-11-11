@@ -1,16 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "../../lib/supabaseClient";
 import { TradeInfo } from "@/app/lib/types";
 
-export async function GET(): Promise<
-  NextResponse<TradeInfo[] | { error: string }>
-> {
+export async function GET(
+  req: NextRequest
+): Promise<NextResponse<TradeInfo[] | { error: string }>> {
   const supabase = await createClient();
+  // parse the URL
+  const { searchParams } = new URL(req.url);
+  const userId = searchParams.get("userId");
   const { data, error } = await supabase
     .from("trades")
     .select("*")
+    .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
   let tradeData: TradeInfo[] = [];
@@ -36,11 +40,12 @@ export async function POST(req: Request): Promise<NextResponse> {
     const supabase = await createClient();
 
     // Parse the JSON body from the request
-    const { stock_name, shares, profit } = await req.json();
+    const { stock_name, shares, profit, user_id } = await req.json();
 
     // Insert into Supabase, mapping request fields to DB columns
     const { data, error } = await supabase.from("trades").insert([
       {
+        user_id,
         stock_name: stock_name,
         shares: shares,
         profit: profit,

@@ -5,12 +5,14 @@ import { Box, TextField, Button, Typography } from "@mui/material";
 import { addNewStock } from "@/app/lib/stockService";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "@mui/icons-material";
+import { useUser } from "@/app/context/UserContext";
 
 export default function StockForm() {
   const [stockName, setStockName] = useState("");
   const [wealthSimple, setWealthSimple] = useState<string>("");
   const [questTrade, setQuestTrade] = useState<string>("");
   const [dividendFrequency, setDividendFrequency] = useState<string>("");
+  const { user } = useUser();
 
   const router = useRouter();
 
@@ -18,12 +20,13 @@ export default function StockForm() {
     e.preventDefault();
 
     await addNewStock(
+      user?.id ?? "",
       stockName,
       Number(questTrade), // questTrade first
       Number(wealthSimple), // then wealthSimple
       Number(dividendFrequency) // dividendFrequency last
     );
-    router.push("/");
+    router.push("/stock/new");
   };
 
   return (

@@ -14,6 +14,7 @@ import {
 } from "../lib/utils/dashboardHelpers";
 import { getGoals, getStock } from "../lib/stockService";
 import { ClientStockData, GoalInfo } from "../lib/types";
+import { useUser } from "../context/UserContext";
 
 export default function PlanDashboard() {
   const [monthlyDividends, setMonthlyDividends] = useState(0);
@@ -23,25 +24,27 @@ export default function PlanDashboard() {
   const [potentialStocks, setPotentialStocks] = useState<ClientStockData[]>([]);
   const [cash, setCash] = useState(0);
   const [goals, setGoals] = useState<GoalInfo>({
-    longTermGoal: 0,
-    shortTermGoal: 0,
+    longTermGoal: 8000,
+    shortTermGoal: 600,
   });
+  const { user } = useUser();
 
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
+    if (!user) return;
     const fetchData = async () => {
       try {
-        const data = await getStock();
+        const data = await getStock(user.id ?? "");
         setPotentialStocks(data);
-        const goalData = await getGoals();
+        const goalData = await getGoals(user.id ?? "");
         setGoals(goalData);
       } catch (err) {
         console.error("Error fetching data:", err);
       }
     };
     fetchData();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     setAssetValue(calculateTotalAssets(potentialStocks));

@@ -5,6 +5,7 @@ import { Box, TextField, Button, Typography } from "@mui/material";
 import { updateStock } from "@/app/lib/stockService";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft } from "@mui/icons-material";
+import { useUser } from "@/app/context/UserContext";
 
 export default function EditStockForm() {
   const router = useRouter();
@@ -27,17 +28,19 @@ export default function EditStockForm() {
   const [wealthSimple, setWealthSimple] = useState<string>("");
   const [questTrade, setQuestTrade] = useState<string>("");
   const [dividendFrequency, setDividendFrequency] = useState<string>("");
+  const { user } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     await updateStock(
+      user?.id ?? "",
       stockName,
       Number(questTrade),
       Number(wealthSimple),
       Number(dividendFrequency)
     );
-    router.push("/");
+    router.push("/stocks");
   };
 
   return (
