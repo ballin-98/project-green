@@ -40,10 +40,7 @@ export default function Dashboard() {
   const [stocks, setStocks] = useState<ClientStockData[]>([]);
   const [trades, setTrades] = useState<TradeInfo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [goals, setGoals] = useState<GoalInfo>({
-    longTermGoal: 8000,
-    shortTermGoal: 600,
-  });
+  const [goals, setGoals] = useState<GoalInfo | undefined>(undefined);
   const router = useRouter();
   // const [user, setUser] = useState<AppUser | undefined>(undefined);
   const { user } = useUser();
@@ -63,7 +60,6 @@ export default function Dashboard() {
         if (goalData) {
           setGoals(goalData);
         }
-        setGoals(goalData);
         setAssetValue(calculateTotalAssets(stockData));
         setMonthlyDividends(calculateMonthlyDividends(stockData));
         setYearlyDividends(calculateYearlyDividends(stockData));
@@ -273,12 +269,12 @@ export default function Dashboard() {
           >
             <ProgressBar
               current={monthlyDividends}
-              goal={Number(goals.shortTermGoal)}
+              goal={Number(goals?.shortTermGoal ?? 750)}
               label="Monthly Dividend"
             />
             <ProgressBar
               current={yearlyDividends}
-              goal={Number(goals.longTermGoal)}
+              goal={Number(goals?.longTermGoal ?? 8000)}
               label="Yearly Income"
             />
           </Box>

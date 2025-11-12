@@ -103,6 +103,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
         dividend_frequency,
       })
       .eq("stock_name", name)
+      .eq("user_id", user_id)
       .select();
 
     if (error) throw error;

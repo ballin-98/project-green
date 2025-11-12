@@ -15,8 +15,11 @@ export async function GET(
     .select("*")
     .eq("user_id", userId);
 
-  let goalData: GoalInfo = { longTermGoal: 0, shortTermGoal: 0 };
-  if (data) {
+  console.log("Goals data from DB:", data);
+
+  // set some default data here => that will be overwritten
+  let goalData: GoalInfo = { longTermGoal: 10000, shortTermGoal: 850 };
+  if (data && data.length > 0) {
     goalData = JSON.parse(JSON.stringify(data[0]));
   }
 

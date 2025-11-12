@@ -155,6 +155,11 @@ export const addTrade = async (
   }
 };
 
+// const defaultGoals: GoalInfo = {
+//   longTermGoal: 8000,
+//   shortTermGoal: 600,
+// };
+
 export const getGoals = async (userId: string) => {
   try {
     const goals = handleCachedGoals();
@@ -164,9 +169,15 @@ export const getGoals = async (userId: string) => {
     const response = await fetch(`/api/goals?userId=${userId}`, {
       cache: "no-store",
     });
+
     const jsonResponse = await response.json();
+    // console.log("Fetched goals from API:", jsonResponse);
+
     handleCachedGoals(jsonResponse.goals);
-    return jsonResponse.goals;
+    // console.log("Cached goals:", cachedGoals);
+    // console.log("Returning goals:", jsonResponse.goals);
+    // console.log("Returning goals:", jsonResponse);
+    return jsonResponse;
   } catch (error) {
     console.error("Error fetching trades:", error);
     return [];
