@@ -9,10 +9,13 @@ const getFirstOfMonth = (monthsBack: number): string => {
   return date.toISOString().split("T")[0];
 };
 
+// need better logic here for dividends
 const stockDividendCache = {
   "CDAY.NE": 0.36,
+  "CDAY.TO": 0.36,
   "BIGY.TO": 0.625,
   "SDAY.NE": 0.364,
+  "SDAY.TO": 0.364,
 } as {
   [key: string]: number;
 };
