@@ -16,7 +16,7 @@
     "@mui/x-data-grid": "^8.12.1",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.57.2",
-    "next": "15.2.4",
+    "next": "15.2.8",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "yahoo-finance2": "^2.13.3"
