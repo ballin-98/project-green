@@ -30,7 +30,7 @@ export async function GET(req: Request): Promise<NextResponse<StockData[]>> {
     return NextResponse.json(stockResponse);
   }
 
-  const firstOfLastMonth = getFirstOfMonth(2);
+  const firstOfLastMonth = getFirstOfMonth(3);
   // function to get last month date as string
   try {
     const result = await yahooFinance.chart(ticker, {
