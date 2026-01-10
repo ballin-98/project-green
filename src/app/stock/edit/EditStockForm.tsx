@@ -6,10 +6,12 @@ import { updateStock } from "@/app/lib/stockService";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft } from "@mui/icons-material";
 import { useUser } from "@/app/context/UserContext";
+import { useStockContext } from "@/app/context/StockProvider";
 
 export default function EditStockForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { mutate } = useStockContext();
 
   useEffect(() => {
     // Load query parameters once component mounts
@@ -40,6 +42,7 @@ export default function EditStockForm() {
       Number(wealthSimple),
       Number(dividendFrequency)
     );
+    mutate();
     router.push("/stocks");
   };
 
@@ -101,7 +104,7 @@ export default function EditStockForm() {
         variant="contained"
         sx={{ padding: 1, mt: 2 }}
         startIcon={<ArrowLeft />}
-        onClick={() => router.push("/")}
+        onClick={() => router.push("/stocks")}
       >
         Back
       </Button>

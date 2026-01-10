@@ -3,6 +3,7 @@
 import { Button, Card, CardContent, Typography } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
 import { createClientSideClient } from "../lib/supabaseClientSide";
+import { useUser } from "../context/UserContext";
 
 export default function LoginPage() {
   const handleLogin = async () => {
@@ -19,6 +20,12 @@ export default function LoginPage() {
     }
     window.location.href = data.url!;
   };
+
+  const { user } = useUser();
+
+  if (user !== undefined) {
+    window.location.href = "/stocks";
+  }
 
   return (
     <div
