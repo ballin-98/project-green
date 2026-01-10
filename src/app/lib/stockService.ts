@@ -14,6 +14,7 @@ const handleCachedGoals = (goalsData?: GoalInfo) => {
 
 export const getStock = async (userId: string): Promise<ClientStockData[]> => {
   try {
+    console.log("Fetching stocks for userId:", userId);
     const ownedStocksResponse = await fetch(`/api/db?userId=${userId}`);
     const ownedStocksResponseJson = await ownedStocksResponse.json();
 
@@ -29,7 +30,7 @@ export const getStock = async (userId: string): Promise<ClientStockData[]> => {
           name: stock.name,
           quantity: stock.quantity,
           potential: stock.potential,
-          mostRecentDividend: stockDetailsJson[0].mostRecentDividend,
+          mostRecentDividend: stockDetailsJson[0]?.mostRecentDividend ?? 0,
           price: stockDetailsJson[0].price,
           wealthSimple: stock.wealthSimple,
           questTrade: stock.questTrade,

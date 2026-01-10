@@ -12,9 +12,10 @@ import {
   calculateTotalAssets,
   calculateCashNeeded,
 } from "../lib/utils/dashboardHelpers";
-import { getGoals, getStock } from "../lib/stockService";
+import { getGoals } from "../lib/stockService";
 import { ClientStockData, GoalInfo } from "../lib/types";
 import { useUser } from "../context/UserContext";
+import { useStockContext } from "../context/StockProvider";
 
 export default function PlanDashboard() {
   const [monthlyDividends, setMonthlyDividends] = useState(0);
@@ -30,13 +31,14 @@ export default function PlanDashboard() {
   const { user } = useUser();
 
   useEffect(() => setMounted(true), []);
+  // const { data: stocks } = useStocks(user?.id ?? "");
+  const { stocks } = useStockContext();
 
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
       try {
-        const data = await getStock(user.id ?? "");
-        setPotentialStocks(data);
+        setPotentialStocks(stocks || []);
         const goalData = await getGoals(user.id ?? "");
         if (goalData) {
           setGoals(goalData);
@@ -46,7 +48,7 @@ export default function PlanDashboard() {
       }
     };
     fetchData();
-  }, [user]);
+  }, [user, stocks]);
 
   useEffect(() => {
     setAssetValue(calculateTotalAssets(potentialStocks));

@@ -1,6 +1,6 @@
 import { StockData } from "@/app/lib/types";
 import { NextResponse } from "next/server";
-import yahooFinance from "yahoo-finance2";
+import YahooFinance from "yahoo-finance2";
 
 const getFirstOfMonth = (monthsBack: number): string => {
   const date = new Date();
@@ -25,14 +25,17 @@ export async function GET(req: Request): Promise<NextResponse<StockData[]>> {
   const stockResponse: StockData[] = [];
   const url = new URL(req.url);
   const ticker = url.searchParams.get("ticker");
+  console.log("ticker:", ticker);
 
   if (!ticker) {
     return NextResponse.json(stockResponse);
   }
 
   const firstOfLastMonth = getFirstOfMonth(3);
+  console.log("first of month:", firstOfLastMonth);
   // function to get last month date as string
   try {
+    const yahooFinance = new YahooFinance();
     const result = await yahooFinance.chart(ticker, {
       period1: firstOfLastMonth,
       period2: new Date(),

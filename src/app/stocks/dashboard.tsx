@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, Chip, IconButton } from "@mui/material";
-import { ClientStockData, GoalInfo, TradeInfo } from "../lib/types";
+import { GoalInfo, TradeInfo } from "../lib/types";
 import { useEffect, useState } from "react";
 import TotalCard from "./TotalCard";
 import ProgressBar from "./ProgressBar";
@@ -21,12 +21,14 @@ import {
 import { Edit, Delete } from "@mui/icons-material";
 import {
   deleteStock,
-  getStock,
+  // getStock,
   getTrades,
   getGoals,
 } from "../lib/stockService";
 import { useRouter } from "next/navigation";
 import { useUser } from "../context/UserContext";
+import { useStockContext } from "../context/StockProvider";
+// import useSWR from "swr";
 
 export interface AppUser {
   email: string;
@@ -37,32 +39,30 @@ export default function Dashboard() {
   const [monthlyDividends, setMonthlyDividends] = useState(0);
   const [assetValue, setAssetValue] = useState(0);
   const [yearlyDividends, setYearlyDividends] = useState(0);
-  const [stocks, setStocks] = useState<ClientStockData[]>([]);
   const [trades, setTrades] = useState<TradeInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [goals, setGoals] = useState<GoalInfo | undefined>(undefined);
   const router = useRouter();
-  // const [user, setUser] = useState<AppUser | undefined>(undefined);
   const { user } = useUser();
+
+  const { stocks } = useStockContext();
 
   // run this once we have a user
   useEffect(() => {
-    if (!user) return;
+    if (!user || !stocks) return;
     const fetchData = async () => {
       try {
-        const [stockData, tradeData, goalData] = await Promise.all([
-          getStock(user?.id ?? ""),
+        const [tradeData, goalData] = await Promise.all([
           getTrades(user?.id ?? ""),
           getGoals(user?.id ?? ""),
         ]);
-        setStocks(stockData);
         setTrades(tradeData);
         if (goalData) {
           setGoals(goalData);
         }
-        setAssetValue(calculateTotalAssets(stockData));
-        setMonthlyDividends(calculateMonthlyDividends(stockData));
-        setYearlyDividends(calculateYearlyDividends(stockData));
+        setAssetValue(calculateTotalAssets(stocks));
+        setMonthlyDividends(calculateMonthlyDividends(stocks));
+        setYearlyDividends(calculateYearlyDividends(stocks));
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
@@ -70,7 +70,7 @@ export default function Dashboard() {
       }
     };
     fetchData();
-  }, [user]);
+  }, [user, stocks]);
 
   const handleEdit = (params: any) => {
     router.push(
