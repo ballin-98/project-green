@@ -33,3 +33,9 @@ export interface GoalInfo {
   longTermGoal: number;
   shortTermGoal: number;
 }
+
+export interface AccountInfo {
+  id: string;
+  user_id: string;
+  nickname: string;
+}

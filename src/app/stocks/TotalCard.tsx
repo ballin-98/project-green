@@ -32,6 +32,7 @@ export default function TotalCard({
           transform: "translateY(-3px)",
           boxShadow: 5,
         },
+        backgroundColor: "#fff",
       }}
     >
       {/* Small label/header */}

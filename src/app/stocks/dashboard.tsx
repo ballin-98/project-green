@@ -28,7 +28,8 @@ import {
 import { useRouter } from "next/navigation";
 import { useUser } from "../context/UserContext";
 import { useStockContext } from "../context/StockProvider";
-// import useSWR from "swr";
+import { getAccounts } from "../lib/accountService";
+import TabRow from "./TabRow";
 
 export interface AppUser {
   email: string;
@@ -46,23 +47,30 @@ export default function Dashboard() {
   const { user } = useUser();
 
   const { stocks } = useStockContext();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [accounts, setAccounts] = useState<any[]>([]);
 
   // run this once we have a user
   useEffect(() => {
     if (!user || !stocks) return;
     const fetchData = async () => {
       try {
-        const [tradeData, goalData] = await Promise.all([
+        const [tradeData, goalData, accountData] = await Promise.all([
           getTrades(user?.id ?? ""),
           getGoals(user?.id ?? ""),
+          getAccounts(user?.id ?? ""),
         ]);
         setTrades(tradeData);
         if (goalData) {
           setGoals(goalData);
         }
+        if (accountData) {
+          setAccounts(accountData);
+        }
         setAssetValue(calculateTotalAssets(stocks));
         setMonthlyDividends(calculateMonthlyDividends(stocks));
         setYearlyDividends(calculateYearlyDividends(stocks));
+        console.log("fetched accounts:", accountData);
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
@@ -201,30 +209,42 @@ export default function Dashboard() {
             display: "flex",
             flexDirection: "column",
             flex: 9,
-            gap: 2,
             minHeight: 0,
           }}
         >
-          {/* Total Cards */}
           <Box
             sx={{
               display: "flex",
-              gap: 2,
-              flexWrap: "wrap",
-              marginBottom: 2,
-              justifyContent: "center",
+              flexDirection: "column",
               alignItems: "center",
+              backgroundColor: "#e7e2e2",
+              gap: 1,
             }}
           >
-            <TotalCard totalDividends={assetValue} label="Asset Value" />
-            <TotalCard
-              totalDividends={monthlyDividends}
-              label="Monthly Dividends"
-            />
-            <TotalCard
-              totalDividends={yearlyDividends}
-              label="Yearly Dividends"
-            />
+            <TabRow accounts={accounts}></TabRow>
+            {/* Total Cards */}
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+                flexWrap: "wrap",
+                justifyContent: "center",
+                alignItems: "flex-start",
+                width: "100%",
+                paddingBottom: 1,
+                marginBottom: 1,
+              }}
+            >
+              <TotalCard totalDividends={assetValue} label="Asset Value" />
+              <TotalCard
+                totalDividends={monthlyDividends}
+                label="Monthly Dividends"
+              />
+              <TotalCard
+                totalDividends={yearlyDividends}
+                label="Yearly Dividends"
+              />
+            </Box>
           </Box>
 
           {/* DataGrid */}
