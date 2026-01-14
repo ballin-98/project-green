@@ -5,13 +5,13 @@ import Box from "@mui/material/Box";
 import InputBase from "@mui/material/InputBase";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import { updateAccountNickname } from "../lib/accountService";
 
 type Props = {
   accountName: string;
   accountId: string;
-  isActive?: boolean;
-  onSelect?: () => void;
-  onSave?: (newAccountName: string) => void | Promise<void>;
+  isActive: boolean;
+  onSelect: (accountId: string) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onDelete: (accountId: string) => Promise<any>;
 };
@@ -19,9 +19,8 @@ type Props = {
 export default function AccountTab({
   accountName,
   accountId,
-  isActive = false,
+  isActive,
   onSelect,
-  onSave,
   onDelete,
 }: Props) {
   const [editing, setEditing] = useState(false);
@@ -32,9 +31,17 @@ export default function AccountTab({
     if (editing) inputRef.current?.focus();
   }, [editing]);
 
-  const commit = () => {
-    if (draft.trim() && draft !== accountName) onSave?.(draft.trim());
+  const commit = async () => {
+    if (draft.trim() && draft !== accountName) {
+      console.log("updating account name to:", draft);
+      await updateAccountNickname(accountId, draft);
+    }
     setEditing(false);
+  };
+
+  const handleOnSelect = () => {
+    console.log("this account selected:", accountId);
+    onSelect(accountId);
   };
 
   const handleDelete = async () => {
@@ -48,6 +55,7 @@ export default function AccountTab({
 
   return (
     <Box
+      onClick={handleOnSelect}
       sx={{
         minWidth: 120,
         height: 40,
@@ -65,7 +73,6 @@ export default function AccountTab({
         userSelect: "none",
         fontSize: "0.875rem",
       }}
-      onClick={onSelect}
     >
       {editing ? (
         <InputBase

@@ -18,7 +18,7 @@ import {
   calculateYearlyDividends,
   calculateTotalAssets,
 } from "../lib/utils/dashboardHelpers";
-import { Edit, Delete } from "@mui/icons-material";
+import { Edit, Delete, Add } from "@mui/icons-material";
 import {
   deleteStock,
   // getStock,
@@ -28,8 +28,8 @@ import {
 import { useRouter } from "next/navigation";
 import { useUser } from "../context/UserContext";
 import { useStockContext } from "../context/StockProvider";
-import { getAccounts } from "../lib/accountService";
-import TabRow from "./TabRow";
+import { deleteAccount, getAccounts, addAccount } from "../lib/accountService";
+import AccountTab from "./AccountTab";
 
 export interface AppUser {
   email: string;
@@ -47,12 +47,16 @@ export default function Dashboard() {
   const { user } = useUser();
 
   const { stocks } = useStockContext();
+  const [filteredStocks, setFilteredStocks] = useState(stocks);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [accounts, setAccounts] = useState<any[]>([]);
+  const [activeAccountId, setActiveAccountId] = useState<string | null>(null);
 
   // run this once we have a user
   useEffect(() => {
     if (!user || !stocks) return;
+    console.log("all stocks returned from context:", stocks);
     const fetchData = async () => {
       try {
         const [tradeData, goalData, accountData] = await Promise.all([
@@ -66,11 +70,9 @@ export default function Dashboard() {
         }
         if (accountData) {
           setAccounts(accountData);
+          console.log(accountData);
+          setActiveAccountId(accountData[0]?.id);
         }
-        setAssetValue(calculateTotalAssets(stocks));
-        setMonthlyDividends(calculateMonthlyDividends(stocks));
-        setYearlyDividends(calculateYearlyDividends(stocks));
-        console.log("fetched accounts:", accountData);
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
@@ -79,6 +81,27 @@ export default function Dashboard() {
     };
     fetchData();
   }, [user, stocks]);
+
+  useEffect(() => {
+    if (activeAccountId && stocks) {
+      const newFilteredStocks = stocks.filter(
+        (stock) => stock.accountId === activeAccountId
+      );
+      setFilteredStocks(newFilteredStocks);
+    }
+  }, [activeAccountId, stocks]);
+
+  useEffect(() => {
+    if (filteredStocks) {
+      setAssetValue(calculateTotalAssets(filteredStocks));
+      setMonthlyDividends(calculateMonthlyDividends(filteredStocks));
+      setYearlyDividends(calculateYearlyDividends(filteredStocks));
+    } else {
+      setAssetValue(0);
+      setMonthlyDividends(0);
+      setYearlyDividends(0);
+    }
+  }, [filteredStocks]);
 
   const handleEdit = (params: any) => {
     router.push(
@@ -91,6 +114,15 @@ export default function Dashboard() {
     await deleteStock(user?.id ?? "", params.name);
     router.refresh();
     setLoading(false);
+  };
+
+  const onAccountChange = (accountId: string) => {
+    setActiveAccountId(accountId);
+  };
+
+  const handleAddAccount = async () => {
+    if (!user) return;
+    await addAccount(user?.id, "New Account");
   };
 
   const sortModel: GridSortModel = [{ field: "new", sort: "desc" }];
@@ -221,7 +253,29 @@ export default function Dashboard() {
               gap: 1,
             }}
           >
-            <TabRow accounts={accounts}></TabRow>
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+                justifyContent: "flex-start",
+                width: "100%",
+              }}
+            >
+              {accounts.map((account, index) => (
+                <AccountTab
+                  key={index}
+                  accountName={account.nickname ?? "Unnamed Account"}
+                  accountId={account.id}
+                  isActive={activeAccountId === account.id}
+                  //   this needs to be passed in and it's going to act like a filter
+                  onDelete={deleteAccount}
+                  onSelect={onAccountChange}
+                />
+              ))}
+              <IconButton size="small" sx={{ ml: 1 }}>
+                <Add fontSize="small" onClick={handleAddAccount} />
+              </IconButton>
+            </Box>
             {/* Total Cards */}
             <Box
               sx={{
@@ -257,7 +311,7 @@ export default function Dashboard() {
             }}
           >
             <DataGrid
-              rows={stocks}
+              rows={filteredStocks}
               columns={columns}
               sortModel={sortModel}
               sx={{ flex: 1, minHeight: 0 }}

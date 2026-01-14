@@ -9,6 +9,7 @@ export interface ClientStockData {
   wealthSimple: number;
   questTrade: number;
   dividendFrequency: number;
+  accountId: string;
 }
 
 // returned from stock endpoint

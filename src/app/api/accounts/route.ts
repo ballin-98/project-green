@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     .from("accounts")
     .select("id, nickname, created_at")
     .eq("user_id", userId)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: true });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

@@ -35,6 +35,7 @@ export const getStock = async (userId: string): Promise<ClientStockData[]> => {
           wealthSimple: stock.wealthSimple,
           questTrade: stock.questTrade,
           dividendFrequency: stock.dividendFrequency,
+          accountId: stock.accountId,
         } as ClientStockData;
       }
     );

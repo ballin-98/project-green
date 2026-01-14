@@ -36,6 +36,7 @@ export async function GET(
       quantity: stock.quantity,
       potential: 0,
       price: 0,
+      accountId: stock.account_id,
     }));
   }
 
