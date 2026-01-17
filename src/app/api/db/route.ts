@@ -30,12 +30,11 @@ export async function GET(
     stockData = data?.map((stock) => ({
       id: stock.id,
       name: stock.stock_name,
-      wealthSimple: stock.wealth_simple,
-      questTrade: stock.quest_trade,
-      dividendFrequency: stock.dividend_frequency,
       quantity: stock.quantity,
+      dividendFrequency: stock.dividend_frequency,
       potential: 0,
       price: 0,
+      accountId: stock.account_id,
     }));
   }
 
@@ -52,7 +51,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     const supabase = await createClient();
 
     // Parse the JSON body from the request
-    const { name, wealth_simple, quest_trade, dividend_frequency, user_id } =
+    const { name, quantity, dividend_frequency, user_id, account_id } =
       await req.json();
 
     // Insert into Supabase, mapping request fields to DB columns
@@ -60,9 +59,9 @@ export async function POST(req: Request): Promise<NextResponse> {
       {
         user_id: user_id,
         stock_name: name,
-        wealth_simple: wealth_simple,
-        quest_trade: quest_trade,
+        quantity: quantity,
         dividend_frequency: dividend_frequency,
+        account_id: account_id,
       },
     ]);
 
@@ -82,7 +81,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
     const supabase = await createClient();
 
     // Parse JSON body
-    const { name, wealth_simple, quest_trade, dividend_frequency, user_id } =
+    const { name, quantity, dividend_frequency, user_id, account_id } =
       await req.json();
 
     if (!name) {
@@ -98,12 +97,12 @@ export async function PUT(req: Request): Promise<NextResponse> {
       .update({
         user_id,
         stock_name: name,
-        wealth_simple,
-        quest_trade,
+        quantity,
         dividend_frequency,
       })
       .eq("stock_name", name)
       .eq("user_id", user_id)
+      .eq("account_id", account_id)
       .select();
 
     if (error) throw error;

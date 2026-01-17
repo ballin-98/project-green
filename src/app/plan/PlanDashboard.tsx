@@ -34,11 +34,26 @@ export default function PlanDashboard() {
   // const { data: stocks } = useStocks(user?.id ?? "");
   const { stocks } = useStockContext();
 
+  const getUniqueStocks = (stocks: ClientStockData[]) => {
+    const map = new Map<string, ClientStockData>();
+    for (const stock of stocks) {
+      const existing = map.get(stock.name);
+
+      if (existing) {
+        existing.quantity += stock.quantity;
+      } else {
+        map.set(stock.name, { ...stock });
+      }
+    }
+
+    const aggregated = Array.from(map.values());
+    return aggregated;
+  };
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
       try {
-        setPotentialStocks(stocks || []);
+        setPotentialStocks(getUniqueStocks(stocks || []));
         const goalData = await getGoals(user.id ?? "");
         if (goalData) {
           setGoals(goalData);

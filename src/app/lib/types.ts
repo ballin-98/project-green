@@ -6,9 +6,8 @@ export interface ClientStockData {
   potential: number;
   mostRecentDividend?: number | null;
   price: number;
-  wealthSimple: number;
-  questTrade: number;
   dividendFrequency: number;
+  accountId: string;
 }
 
 // returned from stock endpoint
@@ -32,4 +31,10 @@ export interface TradeInfo {
 export interface GoalInfo {
   longTermGoal: number;
   shortTermGoal: number;
+}
+
+export interface AccountInfo {
+  id: string;
+  user_id: string;
+  nickname: string;
 }

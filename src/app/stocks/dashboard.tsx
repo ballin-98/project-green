@@ -18,7 +18,7 @@ import {
   calculateYearlyDividends,
   calculateTotalAssets,
 } from "../lib/utils/dashboardHelpers";
-import { Edit, Delete } from "@mui/icons-material";
+import { Edit, Delete, Add } from "@mui/icons-material";
 import {
   deleteStock,
   // getStock,
@@ -28,7 +28,14 @@ import {
 import { useRouter } from "next/navigation";
 import { useUser } from "../context/UserContext";
 import { useStockContext } from "../context/StockProvider";
-// import useSWR from "swr";
+import {
+  deleteAccount,
+  getAccounts,
+  addAccount,
+  getAccountsKey,
+} from "../lib/accountService";
+import AccountTab from "./AccountTab";
+import useSWR, { mutate } from "swr";
 
 export interface AppUser {
   email: string;
@@ -44,12 +51,37 @@ export default function Dashboard() {
   const [goals, setGoals] = useState<GoalInfo | undefined>(undefined);
   const router = useRouter();
   const { user } = useUser();
+  // const searchParams = useSearchParams();
+
+  const { data: accountsData = [] } = useSWR(
+    user ? getAccountsKey(user.id) : null,
+    () => getAccounts(user!.id)
+  );
 
   const { stocks } = useStockContext();
+  const [filteredStocks, setFilteredStocks] = useState(stocks);
+  const [activeAccountId, setActiveAccountId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (accountsData.length > 0 && !activeAccountId) {
+      setActiveAccountId(accountsData[0]?.id);
+    }
+  }, [accountsData, activeAccountId]);
+
+  useEffect(() => {
+    if (!activeAccountId) return;
+
+    const params = new URLSearchParams(window.location.search);
+    params.set("accountId", activeAccountId);
+
+    // Replace URL without reloading page
+    router.replace(`?${params.toString()}`);
+  }, [activeAccountId, router]);
 
   // run this once we have a user
   useEffect(() => {
     if (!user || !stocks) return;
+    console.log("all stocks returned from context:", stocks);
     const fetchData = async () => {
       try {
         const [tradeData, goalData] = await Promise.all([
@@ -60,9 +92,6 @@ export default function Dashboard() {
         if (goalData) {
           setGoals(goalData);
         }
-        setAssetValue(calculateTotalAssets(stocks));
-        setMonthlyDividends(calculateMonthlyDividends(stocks));
-        setYearlyDividends(calculateYearlyDividends(stocks));
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
@@ -72,9 +101,30 @@ export default function Dashboard() {
     fetchData();
   }, [user, stocks]);
 
+  useEffect(() => {
+    if (activeAccountId && stocks) {
+      const newFilteredStocks = stocks.filter(
+        (stock) => stock.accountId === activeAccountId
+      );
+      setFilteredStocks(newFilteredStocks);
+    }
+  }, [activeAccountId, stocks]);
+
+  useEffect(() => {
+    if (filteredStocks) {
+      setAssetValue(calculateTotalAssets(filteredStocks));
+      setMonthlyDividends(calculateMonthlyDividends(filteredStocks));
+      setYearlyDividends(calculateYearlyDividends(filteredStocks));
+    } else {
+      setAssetValue(0);
+      setMonthlyDividends(0);
+      setYearlyDividends(0);
+    }
+  }, [filteredStocks]);
+
   const handleEdit = (params: any) => {
     router.push(
-      `/stock/edit?name=${params.name}&qt=${params.questTrade}&ws=${params.wealthSimple}&df=${params.dividendFrequency}`
+      `/stock/edit?name=${params.name}&quantity=${params.quantity}&df=${params.dividendFrequency}&accountId=${params.accountId}`
     );
   };
 
@@ -83,6 +133,30 @@ export default function Dashboard() {
     await deleteStock(user?.id ?? "", params.name);
     router.refresh();
     setLoading(false);
+  };
+
+  const onAccountChange = (accountId: string) => {
+    setActiveAccountId(accountId);
+  };
+
+  const handleAddAccount = async () => {
+    if (!user) return;
+    await addAccount(user?.id, "New Account");
+    console.log("calling mutate for accounts");
+    mutate(getAccountsKey(user.id));
+  };
+
+  const handleDeleteAccount = async (accountId: string, index: number) => {
+    if (!user) return;
+    let newActiveId: string = "";
+    if (activeAccountId === accountId) {
+      // Choose previous account in the list, or next if first deleted
+      newActiveId =
+        accountsData[index - 1]?.id || accountsData[index + 1]?.id || "";
+    }
+    await deleteAccount(accountId);
+    mutate(getAccountsKey(user.id));
+    setActiveAccountId(newActiveId);
   };
 
   const sortModel: GridSortModel = [{ field: "new", sort: "desc" }];
@@ -201,30 +275,82 @@ export default function Dashboard() {
             display: "flex",
             flexDirection: "column",
             flex: 9,
-            gap: 2,
             minHeight: 0,
           }}
         >
-          {/* Total Cards */}
           <Box
             sx={{
               display: "flex",
-              gap: 2,
-              flexWrap: "wrap",
-              marginBottom: 2,
-              justifyContent: "center",
+              flexDirection: "column",
               alignItems: "center",
+              backgroundColor: "#ffffff",
+              gap: 1,
             }}
           >
-            <TotalCard totalDividends={assetValue} label="Asset Value" />
-            <TotalCard
-              totalDividends={monthlyDividends}
-              label="Monthly Dividends"
-            />
-            <TotalCard
-              totalDividends={yearlyDividends}
-              label="Yearly Dividends"
-            />
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              {accountsData.map((account, index) => (
+                <AccountTab
+                  key={index}
+                  accountIndex={index}
+                  accountName={account.nickname ?? "Unnamed Account"}
+                  accountId={account.id}
+                  isActive={activeAccountId === account.id}
+                  //   this needs to be passed in and it's going to act like a filter
+                  onDelete={handleDeleteAccount}
+                  onSelect={onAccountChange}
+                />
+              ))}
+              <Box
+                sx={{
+                  height: "30px",
+                  width: "30px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <IconButton
+                  size="small"
+                  onClick={handleAddAccount}
+                  sx={{
+                    "&:hover": {
+                      backgroundColor: "action.hover",
+                    },
+                  }}
+                >
+                  <Add fontSize="small" />
+                </IconButton>
+              </Box>
+            </Box>
+            {/* Total Cards */}
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+                flexWrap: "wrap",
+                justifyContent: "center",
+                alignItems: "flex-start",
+                width: "100%",
+                marginBottom: 1,
+              }}
+            >
+              <TotalCard totalDividends={assetValue} label="Asset Value" />
+              <TotalCard
+                totalDividends={monthlyDividends}
+                label="Monthly Dividends"
+              />
+              <TotalCard
+                totalDividends={yearlyDividends}
+                label="Yearly Dividends"
+              />
+            </Box>
           </Box>
 
           {/* DataGrid */}
@@ -237,7 +363,7 @@ export default function Dashboard() {
             }}
           >
             <DataGrid
-              rows={stocks}
+              rows={filteredStocks}
               columns={columns}
               sortModel={sortModel}
               sx={{ flex: 1, minHeight: 0 }}
@@ -253,6 +379,7 @@ export default function Dashboard() {
             flex: 3,
             gap: 2,
             minWidth: { md: 300 },
+            backgroundColor: "#ffffff",
           }}
         >
           <Box
