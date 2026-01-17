@@ -11,8 +11,8 @@ const getFirstOfMonth = (monthsBack: number): string => {
 
 // need better logic here for dividends
 const stockDividendCache = {
-  "CDAY.NE": 0.36,
-  "CDAY.TO": 0.36,
+  "CDAY.NE": 0.366,
+  "CDAY.TO": 0.366,
   "BIGY.TO": 0.625,
   "SDAY.NE": 0.364,
   "SDAY.TO": 0.364,
