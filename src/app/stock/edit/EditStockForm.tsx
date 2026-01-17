@@ -16,20 +16,18 @@ export default function EditStockForm() {
   useEffect(() => {
     // Load query parameters once component mounts
     const name = searchParams.get("name");
-    const qt = searchParams.get("qt");
-    const ws = searchParams.get("ws");
+    const quantity = searchParams.get("quantity");
     const df = searchParams.get("df");
 
     if (name) setStockName(name);
-    if (qt) setQuestTrade(qt);
-    if (ws) setWealthSimple(ws);
+    if (quantity) setQuantity(quantity);
     if (df) setDividendFrequency(df);
   }, [searchParams]);
 
   const [stockName, setStockName] = useState("");
-  const [wealthSimple, setWealthSimple] = useState<string>("");
-  const [questTrade, setQuestTrade] = useState<string>("");
+  const [quantity, setQuantity] = useState<string>("");
   const [dividendFrequency, setDividendFrequency] = useState<string>("");
+  const accountId = searchParams.get("accountId") || "";
   const { user } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,9 +36,9 @@ export default function EditStockForm() {
     await updateStock(
       user?.id ?? "",
       stockName,
-      Number(questTrade),
-      Number(wealthSimple),
-      Number(dividendFrequency)
+      Number(quantity),
+      Number(dividendFrequency),
+      accountId
     );
     mutate();
     router.push("/stocks");
@@ -73,18 +71,10 @@ export default function EditStockForm() {
         />
 
         <TextField
-          label="Wealth Simple ($)"
+          label="Quantity"
           type="number"
-          value={wealthSimple}
-          onChange={(e) => setWealthSimple(e.target.value)}
-          required
-        />
-
-        <TextField
-          label="Quest Trade ($)"
-          type="number"
-          value={questTrade}
-          onChange={(e) => setQuestTrade(e.target.value)}
+          value={quantity}
+          onChange={(e) => setQuantity(e.target.value)}
           required
         />
 

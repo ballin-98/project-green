@@ -1,5 +1,8 @@
 import { AccountInfo } from "./types";
 
+export const getAccountsKey = (userId: string) =>
+  `/api/accounts?userId=${userId}`;
+
 export const getAccounts = async (userId: string): Promise<AccountInfo[]> => {
   try {
     console.log("Fetching accounts for userId:", userId);

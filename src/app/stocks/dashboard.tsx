@@ -28,8 +28,14 @@ import {
 import { useRouter } from "next/navigation";
 import { useUser } from "../context/UserContext";
 import { useStockContext } from "../context/StockProvider";
-import { deleteAccount, getAccounts, addAccount } from "../lib/accountService";
+import {
+  deleteAccount,
+  getAccounts,
+  addAccount,
+  getAccountsKey,
+} from "../lib/accountService";
 import AccountTab from "./AccountTab";
+import useSWR, { mutate } from "swr";
 
 export interface AppUser {
   email: string;
@@ -45,13 +51,32 @@ export default function Dashboard() {
   const [goals, setGoals] = useState<GoalInfo | undefined>(undefined);
   const router = useRouter();
   const { user } = useUser();
+  // const searchParams = useSearchParams();
+
+  const { data: accountsData = [] } = useSWR(
+    user ? getAccountsKey(user.id) : null,
+    () => getAccounts(user!.id)
+  );
 
   const { stocks } = useStockContext();
   const [filteredStocks, setFilteredStocks] = useState(stocks);
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [accounts, setAccounts] = useState<any[]>([]);
   const [activeAccountId, setActiveAccountId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (accountsData.length > 0 && !activeAccountId) {
+      setActiveAccountId(accountsData[0]?.id);
+    }
+  }, [accountsData, activeAccountId]);
+
+  useEffect(() => {
+    if (!activeAccountId) return;
+
+    const params = new URLSearchParams(window.location.search);
+    params.set("accountId", activeAccountId);
+
+    // Replace URL without reloading page
+    router.replace(`?${params.toString()}`);
+  }, [activeAccountId, router]);
 
   // run this once we have a user
   useEffect(() => {
@@ -59,19 +84,13 @@ export default function Dashboard() {
     console.log("all stocks returned from context:", stocks);
     const fetchData = async () => {
       try {
-        const [tradeData, goalData, accountData] = await Promise.all([
+        const [tradeData, goalData] = await Promise.all([
           getTrades(user?.id ?? ""),
           getGoals(user?.id ?? ""),
-          getAccounts(user?.id ?? ""),
         ]);
         setTrades(tradeData);
         if (goalData) {
           setGoals(goalData);
-        }
-        if (accountData) {
-          setAccounts(accountData);
-          console.log(accountData);
-          setActiveAccountId(accountData[0]?.id);
         }
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -105,7 +124,7 @@ export default function Dashboard() {
 
   const handleEdit = (params: any) => {
     router.push(
-      `/stock/edit?name=${params.name}&qt=${params.questTrade}&ws=${params.wealthSimple}&df=${params.dividendFrequency}`
+      `/stock/edit?name=${params.name}&quantity=${params.quantity}&df=${params.dividendFrequency}&accountId=${params.accountId}`
     );
   };
 
@@ -123,6 +142,21 @@ export default function Dashboard() {
   const handleAddAccount = async () => {
     if (!user) return;
     await addAccount(user?.id, "New Account");
+    console.log("calling mutate for accounts");
+    mutate(getAccountsKey(user.id));
+  };
+
+  const handleDeleteAccount = async (accountId: string, index: number) => {
+    if (!user) return;
+    let newActiveId: string = "";
+    if (activeAccountId === accountId) {
+      // Choose previous account in the list, or next if first deleted
+      newActiveId =
+        accountsData[index - 1]?.id || accountsData[index + 1]?.id || "";
+    }
+    await deleteAccount(accountId);
+    mutate(getAccountsKey(user.id));
+    setActiveAccountId(newActiveId);
   };
 
   const sortModel: GridSortModel = [{ field: "new", sort: "desc" }];
@@ -249,32 +283,51 @@ export default function Dashboard() {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              backgroundColor: "#e7e2e2",
+              backgroundColor: "#ffffff",
               gap: 1,
             }}
           >
             <Box
               sx={{
                 display: "flex",
-                gap: 2,
                 justifyContent: "flex-start",
+                alignItems: "center",
                 width: "100%",
               }}
             >
-              {accounts.map((account, index) => (
+              {accountsData.map((account, index) => (
                 <AccountTab
                   key={index}
+                  accountIndex={index}
                   accountName={account.nickname ?? "Unnamed Account"}
                   accountId={account.id}
                   isActive={activeAccountId === account.id}
                   //   this needs to be passed in and it's going to act like a filter
-                  onDelete={deleteAccount}
+                  onDelete={handleDeleteAccount}
                   onSelect={onAccountChange}
                 />
               ))}
-              <IconButton size="small" sx={{ ml: 1 }}>
-                <Add fontSize="small" onClick={handleAddAccount} />
-              </IconButton>
+              <Box
+                sx={{
+                  height: "30px",
+                  width: "30px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <IconButton
+                  size="small"
+                  onClick={handleAddAccount}
+                  sx={{
+                    "&:hover": {
+                      backgroundColor: "action.hover",
+                    },
+                  }}
+                >
+                  <Add fontSize="small" />
+                </IconButton>
+              </Box>
             </Box>
             {/* Total Cards */}
             <Box
@@ -285,7 +338,6 @@ export default function Dashboard() {
                 justifyContent: "center",
                 alignItems: "flex-start",
                 width: "100%",
-                paddingBottom: 1,
                 marginBottom: 1,
               }}
             >
@@ -327,6 +379,7 @@ export default function Dashboard() {
             flex: 3,
             gap: 2,
             minWidth: { md: 300 },
+            backgroundColor: "#ffffff",
           }}
         >
           <Box

@@ -49,11 +49,12 @@ export const getStock = async (userId: string): Promise<ClientStockData[]> => {
 export const addNewStock = async (
   userId: string,
   name: string,
-  questTrade: number,
-  wealthSimple: number,
-  dividendFrequency?: number
+  quantity: number,
+  dividendFrequency: number,
+  accountId: string
 ) => {
   try {
+    console.log("quantity that stock is being called with: ", quantity);
     const response = await fetch(`/api/db`, {
       method: "POST",
       headers: {
@@ -62,9 +63,9 @@ export const addNewStock = async (
       body: JSON.stringify({
         user_id: userId,
         name,
-        quest_trade: questTrade,
-        wealth_simple: wealthSimple,
         dividend_frequency: dividendFrequency,
+        account_id: accountId,
+        quantity: quantity,
       }),
     });
     return response.json();
@@ -76,10 +77,9 @@ export const addNewStock = async (
 export const updateStock = async (
   userId: string,
   name: string,
-  questTrade: number,
-  wealthSimple: number,
-  id: number,
-  dividendFrequency?: number
+  quantity: number,
+  dividendFrequency: number,
+  accountId: string
 ) => {
   try {
     const response = await fetch(`/api/db`, {
@@ -90,10 +90,9 @@ export const updateStock = async (
       body: JSON.stringify({
         user_id: userId,
         name,
-        quest_trade: questTrade,
-        wealth_simple: wealthSimple,
+        quantity: quantity,
         dividend_frequency: dividendFrequency,
-        id,
+        account_id: accountId,
       }),
     });
     return response.json();

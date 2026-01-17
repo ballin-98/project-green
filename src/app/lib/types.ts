@@ -6,8 +6,6 @@ export interface ClientStockData {
   potential: number;
   mostRecentDividend?: number | null;
   price: number;
-  wealthSimple: number;
-  questTrade: number;
   dividendFrequency: number;
   accountId: string;
 }

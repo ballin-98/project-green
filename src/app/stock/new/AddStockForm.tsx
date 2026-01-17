@@ -1,23 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { Box, TextField, Button, Typography } from "@mui/material";
+import { Box, TextField, Button, Typography, MenuItem } from "@mui/material";
 import { addNewStock } from "@/app/lib/stockService";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "@mui/icons-material";
 import { useUser } from "@/app/context/UserContext";
+import { getAccountsKey, getAccounts } from "@/app/lib/accountService";
+import useSWR from "swr";
+import { AccountInfo } from "@/app/lib/types";
 
 export default function StockForm() {
   const initialFormState = {
     stockName: "",
-    wealthSimple: "",
-    questTrade: "",
+    quantity: "",
     dividendFrequency: "",
+    accountId: "",
   };
 
   const [form, setForm] = useState(initialFormState);
   const { user } = useUser();
   const router = useRouter();
+  const { data: accountsData = [] } = useSWR(
+    user ? getAccountsKey(user.id) : null,
+    () => getAccounts(user!.id)
+  );
 
   const handleChange = (field: string, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -26,23 +33,22 @@ export default function StockForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log("this is the quantity: ", form.quantity);
+
     if (!user) return;
 
     await addNewStock(
       user.id,
       form.stockName,
-      Number(form.questTrade),
-      Number(form.wealthSimple),
-      Number(form.dividendFrequency)
+      Number(form.quantity),
+      Number(form.dividendFrequency),
+      form.accountId
     );
 
     console.log("Finished adding stock");
 
     // Reset form values
     setForm(initialFormState);
-
-    // Optional: navigate after submission
-    // router.push("/stock/new");
   };
 
   return (
@@ -63,7 +69,19 @@ export default function StockForm() {
         }}
       >
         <Typography variant="h6">New Stock Information</Typography>
-
+        <TextField
+          select
+          label="Account"
+          value={form.accountId}
+          onChange={(e) => handleChange("accountId", e.target.value)}
+          required
+        >
+          {accountsData.map((account: AccountInfo) => (
+            <MenuItem key={account.id} value={account.id}>
+              {account.nickname}
+            </MenuItem>
+          ))}
+        </TextField>
         <TextField
           label="Stock Name"
           value={form.stockName}
@@ -72,18 +90,10 @@ export default function StockForm() {
         />
 
         <TextField
-          label="Wealth Simple ($)"
+          label="Quantity"
           type="number"
-          value={form.wealthSimple}
-          onChange={(e) => handleChange("wealthSimple", e.target.value)}
-          required
-        />
-
-        <TextField
-          label="Quest Trade ($)"
-          type="number"
-          value={form.questTrade}
-          onChange={(e) => handleChange("questTrade", e.target.value)}
+          value={form.quantity}
+          onChange={(e) => handleChange("quantity", e.target.value)}
           required
         />
 

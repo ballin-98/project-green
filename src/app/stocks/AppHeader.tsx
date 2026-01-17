@@ -35,9 +35,9 @@ export default function AppHeader() {
     >
       <Toolbar
         sx={{
-          minHeight: "48px",
           paddingX: 2,
           display: "flex",
+          alignItems: "center",
           justifyContent: "space-between",
         }}
       >
@@ -49,7 +49,14 @@ export default function AppHeader() {
           Portfolio Overview
         </Typography>
 
-        <Box sx={{ display: "flex", gap: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           {user && (
             <>
               <Button color="inherit" onClick={() => router.push("/stocks")}>
@@ -63,12 +70,6 @@ export default function AppHeader() {
               </Button>
               <Button color="inherit" onClick={() => router.push("/plan")}>
                 Plan
-              </Button>
-              <Button
-                color="inherit"
-                onClick={() => router.push("/projections")}
-              >
-                Projections
               </Button>
               <Button color="inherit" onClick={handleLogout}>
                 Sign Out

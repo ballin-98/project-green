@@ -8,15 +8,17 @@ import CloseIcon from "@mui/icons-material/Close";
 import { updateAccountNickname } from "../lib/accountService";
 
 type Props = {
+  accountIndex: number;
   accountName: string;
   accountId: string;
   isActive: boolean;
   onSelect: (accountId: string) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onDelete: (accountId: string) => Promise<any>;
+  onDelete: (accountId: string, accountIndex: number) => Promise<any>;
 };
 
 export default function AccountTab({
+  accountIndex,
   accountName,
   accountId,
   isActive,
@@ -47,7 +49,7 @@ export default function AccountTab({
   const handleDelete = async () => {
     console.log("trying delete");
     try {
-      await onDelete(accountId);
+      await onDelete(accountId, accountIndex);
     } catch (error) {
       console.log("Error deleting account:", error);
     }
@@ -100,11 +102,15 @@ export default function AccountTab({
           {accountName}
         </Box>
       )}
-      <IconButton size="small" sx={{ ml: 1 }}>
-        <CloseIcon
-          fontSize="small"
-          onClick={async () => await handleDelete()}
-        />
+      <IconButton
+        size="small"
+        sx={{
+          ml: 1,
+          visibility: isActive ? "visible" : "hidden",
+        }}
+        onClick={async () => await handleDelete()}
+      >
+        <CloseIcon fontSize="small" />
       </IconButton>
     </Box>
   );
