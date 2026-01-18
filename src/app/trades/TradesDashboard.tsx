@@ -9,11 +9,13 @@ import { getTrades } from "@/app/lib/stockService";
 import { TradeInfo } from "@/app/lib/types";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import useSWR, { mutate } from "swr";
 import AccountTab from "../stocks/AccountTab";
+import { Add } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 
 export default function TradesDashboard() {
   const { user } = useUser();
@@ -27,6 +29,8 @@ export default function TradesDashboard() {
     user ? getAccountsKey(user.id) : null,
     () => getAccounts(user!.id),
   );
+
+  const router = useRouter();
 
   /** Pick active account (saved or first) */
   useEffect(() => {
@@ -94,23 +98,25 @@ export default function TradesDashboard() {
       <Box
         sx={{
           display: "flex",
-          justifyContent: "flex-start",
+          justifyContent: "space-between",
           alignItems: "center",
           width: "100%",
         }}
       >
-        {accounts.map((account, index) => (
-          <AccountTab
-            key={index}
-            accountIndex={index}
-            accountName={account.nickname ?? "Unnamed Account"}
-            accountId={account.id}
-            isActive={activeAccountId === account.id}
-            //   this needs to be passed in and it's going to act like a filter
-            onDelete={handleDeleteAccount}
-            onSelect={() => setActiveAccountId(account.id)}
-          />
-        ))}
+        <Box sx={{ display: "flex" }}>
+          {accounts.map((account, index) => (
+            <AccountTab
+              key={index}
+              accountIndex={index}
+              accountName={account.nickname ?? "Unnamed Account"}
+              accountId={account.id}
+              isActive={activeAccountId === account.id}
+              //   this needs to be passed in and it's going to act like a filter
+              onDelete={handleDeleteAccount}
+              onSelect={() => setActiveAccountId(account.id)}
+            />
+          ))}
+        </Box>
         <Box
           sx={{
             height: "30px",
@@ -120,6 +126,15 @@ export default function TradesDashboard() {
             justifyContent: "center",
           }}
         ></Box>
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          onClick={() =>
+            router.push(`/trades/new?accountId=${activeAccountId}`)
+          }
+        >
+          Add Trade
+        </Button>
       </Box>
 
       {/* Trades Grid */}

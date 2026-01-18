@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Box, TextField, Button, Typography, MenuItem } from "@mui/material";
 import { addTrade } from "@/app/lib/stockService";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft } from "@mui/icons-material";
 import { useUser } from "@/app/context/UserContext";
 import { AccountInfo } from "@/app/lib/types";
@@ -17,6 +17,14 @@ export default function TradeForm() {
   const [accountsData, setAccountsData] = useState<AccountInfo[]>([]);
   const [accountId, setAccountId] = useState<string>("");
   const { user } = useUser();
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    // Load query parameters once component mounts
+    const initialAccountId = searchParams.get("accountId");
+    setAccountId(initialAccountId || "");
+  }, [searchParams]);
 
   useEffect(() => setMounted(true), []);
   const router = useRouter();
@@ -38,7 +46,6 @@ export default function TradeForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("accout id in new trade form: ", accountId);
     if (!user && !accountId) return;
     await addTrade(
       user?.id ?? "",
@@ -52,7 +59,6 @@ export default function TradeForm() {
   };
 
   const handleAccountId = (value: string) => {
-    console.log("Selected account ID:", value);
     setAccountId(value);
   };
 
