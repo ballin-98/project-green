@@ -55,7 +55,7 @@ export default function Dashboard() {
 
   const { data: accountsData = [] } = useSWR(
     user ? getAccountsKey(user.id) : null,
-    () => getAccounts(user!.id)
+    () => getAccounts(user!.id),
   );
 
   const { stocks } = useStockContext();
@@ -81,14 +81,9 @@ export default function Dashboard() {
   // run this once we have a user
   useEffect(() => {
     if (!user || !stocks) return;
-    console.log("all stocks returned from context:", stocks);
     const fetchData = async () => {
       try {
-        const [tradeData, goalData] = await Promise.all([
-          getTrades(user?.id ?? ""),
-          getGoals(user?.id ?? ""),
-        ]);
-        setTrades(tradeData);
+        const [goalData] = await Promise.all([getGoals(user?.id ?? "")]);
         if (goalData) {
           setGoals(goalData);
         }
@@ -104,7 +99,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (activeAccountId && stocks) {
       const newFilteredStocks = stocks.filter(
-        (stock) => stock.accountId === activeAccountId
+        (stock) => stock.accountId === activeAccountId,
       );
       setFilteredStocks(newFilteredStocks);
     }
@@ -122,9 +117,22 @@ export default function Dashboard() {
     }
   }, [filteredStocks]);
 
+  useEffect(() => {
+    if (!activeAccountId && !user) return;
+    const fetchTrades = async () => {
+      try {
+        const tradesData = await getTrades(user?.id ?? "", activeAccountId!);
+        setTrades(tradesData);
+      } catch (err) {
+        console.error("Error fetching trades:", err);
+      }
+    };
+    fetchTrades();
+  }, [activeAccountId, user]);
+
   const handleEdit = (params: any) => {
     router.push(
-      `/stock/edit?name=${params.name}&quantity=${params.quantity}&df=${params.dividendFrequency}&accountId=${params.accountId}`
+      `/stock/edit?name=${params.name}&quantity=${params.quantity}&df=${params.dividendFrequency}&accountId=${params.accountId}`,
     );
   };
 
@@ -405,7 +413,9 @@ export default function Dashboard() {
               label="Yearly Income"
             />
           </Box>
-          <TradeList trades={trades} />
+          {activeAccountId && trades && (
+            <TradeList trades={trades} accountId={activeAccountId} />
+          )}
         </Box>
       </Box>
     </Box>
