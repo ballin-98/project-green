@@ -16,6 +16,8 @@ const stockDividendCache = {
   "BIGY.TO": 0.625,
   "SDAY.NE": 0.364,
   "SDAY.TO": 0.364,
+  "AGCC.NE": 0.135,
+  "HHLE.TO": 0.0934,
 } as {
   [key: string]: number;
 };
@@ -51,12 +53,9 @@ export async function GET(req: Request): Promise<NextResponse<StockData[]>> {
       mostRecentDividend = stockDividendCache[ticker] || 0;
     }
 
-    // hardcoded values to get the proper dividend for some stocks this could probably be a function
+    // this is hard coded to get more precision for HHLE.TO
     if (ticker === "HHLE.TO") {
       mostRecentDividend = 0.0934;
-    }
-    if (ticker === "BIGY.TO") {
-      mostRecentDividend = stockDividendCache[ticker];
     }
     stockResponse.push({
       symbol: result.meta.symbol,
