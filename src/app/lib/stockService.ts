@@ -21,7 +21,7 @@ export const getStock = async (userId: string): Promise<ClientStockData[]> => {
     const stockDetailPromises = ownedStocksResponseJson.map(
       async (stock: any) => {
         const stockDetails = await fetch(
-          `/api/stock?ticker=${encodeURIComponent(stock.name)}`
+          `/api/stock?ticker=${encodeURIComponent(stock.name)}`,
         );
         const stockDetailsJson = await stockDetails.json();
 
@@ -37,7 +37,7 @@ export const getStock = async (userId: string): Promise<ClientStockData[]> => {
           dividendFrequency: stock.dividendFrequency,
           accountId: stock.accountId,
         } as ClientStockData;
-      }
+      },
     );
     return await Promise.all(stockDetailPromises);
   } catch (error) {
@@ -51,7 +51,7 @@ export const addNewStock = async (
   name: string,
   quantity: number,
   dividendFrequency: number,
-  accountId: string
+  accountId: string,
 ) => {
   try {
     console.log("quantity that stock is being called with: ", quantity);
@@ -79,7 +79,7 @@ export const updateStock = async (
   name: string,
   quantity: number,
   dividendFrequency: number,
-  accountId: string
+  accountId: string,
 ) => {
   try {
     const response = await fetch(`/api/db`, {
@@ -119,11 +119,14 @@ export const deleteStock = async (userId: string, stockName: string) => {
   }
 };
 
-export const getTrades = async (userId: string) => {
+export const getTrades = async (userId: string, accountId: string) => {
   try {
-    const response = await fetch(`/api/trades?userId=${userId}`, {
-      cache: "no-store",
-    });
+    const response = await fetch(
+      `/api/trades?userId=${userId}&accountId=${accountId}`,
+      {
+        cache: "no-store",
+      },
+    );
     return response.json();
   } catch (error) {
     console.error("Error fetching trades:", error);
@@ -135,9 +138,11 @@ export const addTrade = async (
   userId: string,
   stock_name: string,
   shares: number,
-  profit: number
+  profit: number,
+  accountId: string,
 ) => {
   try {
+    console.log("account id in add trade stock service: ", accountId);
     const response = await fetch(`/api/trades`, {
       method: "POST",
       headers: {
@@ -148,6 +153,7 @@ export const addTrade = async (
         stock_name: stock_name,
         shares: shares,
         profit: profit,
+        account_id: accountId,
       }),
     });
     return response.json();

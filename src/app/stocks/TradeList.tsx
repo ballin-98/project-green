@@ -14,13 +14,11 @@ import {
 
 export interface TradeListProps {
   trades: TradeInfo[];
+  accountId: string;
 }
 
-export default function TradeList({ trades }: TradeListProps) {
+export default function TradeList({ trades = [], accountId }: TradeListProps) {
   const router = useRouter();
-  if (trades.length === 0) {
-    return <Typography>No trades available.</Typography>;
-  }
 
   return (
     <Box
@@ -52,39 +50,41 @@ export default function TradeList({ trades }: TradeListProps) {
         <Button
           variant="contained"
           startIcon={<Add />}
-          onClick={() => router.push("/trades/new")}
+          onClick={() => router.push(`/trades/new?accountId=${accountId}`)}
         >
           Add Trade
         </Button>
       </Box>
       <Box sx={{ zIndex: 1 }}>
-        <Stack>
-          {trades.map((trade, index) => (
-            <Card key={index} variant="outlined">
-              <CardContent>
-                <Typography variant="h6">{trade.stockName}</Typography>
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    mt: 1,
-                  }}
-                >
-                  <Typography variant="body2">
-                    ${trade.profit.toFixed(2)}
-                  </Typography>
-                  <Typography variant="body2">
-                    Shares: {trade.shares}
-                  </Typography>
-                  <Typography variant="body2">
-                    Date: {new Date(trade.date).toLocaleDateString()}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
-          ))}
-        </Stack>
+        {trades && (
+          <Stack>
+            {trades.map((trade, index) => (
+              <Card key={index} variant="outlined">
+                <CardContent>
+                  <Typography variant="h6">{trade.stockName}</Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      mt: 1,
+                    }}
+                  >
+                    <Typography variant="body2">
+                      ${trade.profit.toFixed(2)}
+                    </Typography>
+                    <Typography variant="body2">
+                      Shares: {trade.shares}
+                    </Typography>
+                    <Typography variant="body2">
+                      Date: {new Date(trade.date).toLocaleDateString()}
+                    </Typography>
+                  </Box>
+                </CardContent>
+              </Card>
+            ))}
+          </Stack>
+        )}
       </Box>
     </Box>
   );
