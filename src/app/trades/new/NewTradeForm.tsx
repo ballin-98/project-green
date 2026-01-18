@@ -18,15 +18,15 @@ export default function TradeForm() {
   const [accountsData, setAccountsData] = useState<AccountInfo[]>([]);
   const [accountId, setAccountId] = useState<string>("");
   const { user } = useUser();
+  const router = useRouter();
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     // Load query parameters once component mounts
     const initialAccountId = searchParams.get("accountId");
     setAccountId(initialAccountId || "");
   }, [searchParams]);
-
-  useEffect(() => setMounted(true), []);
-  const router = useRouter();
 
   useEffect(() => {
     if (!user) return;

@@ -1,5 +1,8 @@
+import { Suspense } from "react";
 import TradeForm from "./NewTradeForm";
 
 export default function NewStockPage() {
-  return <TradeForm />;
+  <Suspense fallback={<div>Loading…</div>}>
+    <TradeForm />
+  </Suspense>;
 }
