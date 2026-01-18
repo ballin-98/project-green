@@ -22,9 +22,45 @@ export default function TradeList({ trades, accountId }: TradeListProps) {
   console.log("trades, accountId in TradeList: ", trades, accountId);
   if (trades.length === 0) {
     return (
-      <Typography sx={{ p: 2 }} color="text.secondary">
-        No trades yet
-      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          paddingX: 2,
+          borderRadius: 2,
+          height: 500, // fixed height
+          boxShadow: 3,
+          backgroundColor: "white",
+          overflowY: "auto", // ✅ makes the list scrollable
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "",
+            justifyContent: "space-between",
+            alignItems: "center", // ✅ vertically center both header & button
+            px: 1,
+            py: 2,
+            position: "sticky",
+            top: 0,
+            backgroundColor: "white",
+            zIndex: 10,
+          }}
+        >
+          <Typography variant="h6">Recent Trades</Typography>
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => router.push(`/trades/new?accountId=${accountId}`)}
+          >
+            Add Trade
+          </Button>
+        </Box>
+        <Typography variant="body2" sx={{ mt: 4 }}>
+          No trades available. Click Add Trade to create your first trade.
+        </Typography>
+      </Box>
     );
   }
   return (
