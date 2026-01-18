@@ -48,6 +48,7 @@ export default function Dashboard() {
   const [yearlyDividends, setYearlyDividends] = useState(0);
   const [trades, setTrades] = useState<TradeInfo[]>([]);
   const [loading, setLoading] = useState(true);
+  // const [tradesLoading, setTradesLoading] = useState(true);
   const [goals, setGoals] = useState<GoalInfo | undefined>(undefined);
   const router = useRouter();
   const { user } = useUser();
@@ -83,7 +84,7 @@ export default function Dashboard() {
     if (!user || !stocks) return;
     const fetchData = async () => {
       try {
-        const [goalData] = await Promise.all([getGoals(user?.id ?? "")]);
+        const [goalData] = await Promise.all([getGoals(user.id)]);
         if (goalData) {
           setGoals(goalData);
         }
@@ -118,10 +119,10 @@ export default function Dashboard() {
   }, [filteredStocks]);
 
   useEffect(() => {
-    if (!activeAccountId && !user) return;
+    if (!activeAccountId || !user) return;
     const fetchTrades = async () => {
       try {
-        const tradesData = await getTrades(user?.id ?? "", activeAccountId!);
+        const tradesData = await getTrades(user.id, activeAccountId!);
         setTrades(tradesData.trades);
       } catch (err) {
         console.error("Error fetching trades:", err);
@@ -173,6 +174,13 @@ export default function Dashboard() {
     { field: "name", headerName: "Ticker", flex: 1, minWidth: 100 },
     { field: "price", headerName: "Price", flex: 1, minWidth: 100 },
     { field: "quantity", headerName: "Quantity", flex: 1, minWidth: 100 },
+    {
+      field: "totalValue",
+      headerName: "Value ($)",
+      minWidth: 150,
+      valueGetter: (_, row) => ((row.price ?? 0) * row.quantity).toFixed(2),
+      sortComparator: (v1, v2) => (Number(v1) ?? 0) - (Number(v2) ?? 0),
+    },
     {
       field: "dividendFrequency",
       headerName: "Frequency",
@@ -413,7 +421,7 @@ export default function Dashboard() {
               label="Yearly Income"
             />
           </Box>
-          {activeAccountId && trades && (
+          {activeAccountId != null && trades != undefined && (
             <TradeList trades={trades} accountId={activeAccountId} />
           )}
         </Box>
