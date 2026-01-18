@@ -122,7 +122,7 @@ export default function Dashboard() {
     const fetchTrades = async () => {
       try {
         const tradesData = await getTrades(user?.id ?? "", activeAccountId!);
-        setTrades(tradesData);
+        setTrades(tradesData.trades);
       } catch (err) {
         console.error("Error fetching trades:", err);
       }
