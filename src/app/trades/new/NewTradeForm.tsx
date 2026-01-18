@@ -10,6 +10,7 @@ import { AccountInfo } from "@/app/lib/types";
 import { getAccounts } from "@/app/lib/accountService";
 
 export default function TradeForm() {
+  const searchParams = useSearchParams();
   const [stockName, setStockName] = useState("");
   const [shares, setShares] = useState<string>("");
   const [profit, setProfit] = useState<string>("");
@@ -17,8 +18,6 @@ export default function TradeForm() {
   const [accountsData, setAccountsData] = useState<AccountInfo[]>([]);
   const [accountId, setAccountId] = useState<string>("");
   const { user } = useUser();
-
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     // Load query parameters once component mounts
