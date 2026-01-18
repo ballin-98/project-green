@@ -121,9 +121,15 @@ export default function Dashboard() {
   useEffect(() => {
     if (!activeAccountId || !user) return;
     const fetchTrades = async () => {
+      console.log(
+        "Fetching trades for account:",
+        activeAccountId,
+        " user:",
+        user.id,
+      );
       try {
         const tradesData = await getTrades(user.id, activeAccountId!);
-        setTrades(tradesData.trades);
+        setTrades(tradesData);
       } catch (err) {
         console.error("Error fetching trades:", err);
       }
