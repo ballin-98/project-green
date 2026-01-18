@@ -19,6 +19,47 @@ export interface TradeListProps {
 
 export default function TradeList({ trades = [], accountId }: TradeListProps) {
   const router = useRouter();
+  if (!trades || !accountId) return null;
+
+  if (trades.length === 0) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          paddingX: 2,
+          borderRadius: 2,
+          height: 500, // fixed height
+          boxShadow: 3,
+          backgroundColor: "white",
+          overflowY: "auto", // ✅ makes the list scrollable
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center", // ✅ vertically center both header & button
+            px: 1,
+            py: 2,
+            position: "sticky",
+            top: 0,
+            backgroundColor: "white",
+            zIndex: 10,
+          }}
+        >
+          <Typography variant="h6">Recent Trades</Typography>
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => router.push(`/trades/new?accountId=${accountId}`)}
+          >
+            Add Trade
+          </Button>
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Box

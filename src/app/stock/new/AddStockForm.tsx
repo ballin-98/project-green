@@ -23,7 +23,7 @@ export default function StockForm() {
   const router = useRouter();
   const { data: accountsData = [] } = useSWR(
     user ? getAccountsKey(user.id) : null,
-    () => getAccounts(user!.id)
+    () => getAccounts(user!.id),
   );
 
   const handleChange = (field: string, value: string) => {
@@ -42,7 +42,7 @@ export default function StockForm() {
       form.stockName,
       Number(form.quantity),
       Number(form.dividendFrequency),
-      form.accountId
+      form.accountId,
     );
 
     console.log("Finished adding stock");
@@ -98,12 +98,17 @@ export default function StockForm() {
         />
 
         <TextField
-          label="Dividend Frequency (per year)"
-          type="number"
+          select
+          label="Dividend Frequency"
           value={form.dividendFrequency}
           onChange={(e) => handleChange("dividendFrequency", e.target.value)}
           required
-        />
+        >
+          <MenuItem value={24}>Semi Monthly</MenuItem>
+          <MenuItem value={12}>Monthly</MenuItem>
+          <MenuItem value={4}>Quarterly</MenuItem>
+          <MenuItem value={1}>Annual</MenuItem>
+        </TextField>
 
         <Button variant="contained" type="submit">
           Add Stock
