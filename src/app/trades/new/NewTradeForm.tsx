@@ -9,7 +9,7 @@ import { useUser } from "@/app/context/UserContext";
 import { AccountInfo } from "@/app/lib/types";
 import { getAccounts } from "@/app/lib/accountService";
 
-export default function TradeForm() {
+export default function NewTradeForm() {
   const searchParams = useSearchParams();
   const [stockName, setStockName] = useState("");
   const [shares, setShares] = useState<string>("");
@@ -20,10 +20,13 @@ export default function TradeForm() {
   const { user } = useUser();
   const router = useRouter();
 
+  console.log("user in trade form", user);
+
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     // Load query parameters once component mounts
+    if (!searchParams) return;
     const initialAccountId = searchParams.get("accountId");
     setAccountId(initialAccountId || "");
   }, [searchParams]);
@@ -33,6 +36,7 @@ export default function TradeForm() {
     const fetchAccounts = async () => {
       try {
         const accounts = await getAccounts(user.id);
+        console.log("accounts data");
         setAccountsData(accounts);
       } catch (error) {
         console.error("Error fetching accounts:", error);
@@ -41,11 +45,11 @@ export default function TradeForm() {
     fetchAccounts();
   }, [user]);
 
-  if (!mounted) return null; // render nothing until mounted
+  if (!mounted) return <div>SOMETHING</div>; // render nothing until mounted
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user && !accountId) return;
+    if (!user || !accountId) return;
     await addTrade(
       user?.id ?? "",
       stockName,

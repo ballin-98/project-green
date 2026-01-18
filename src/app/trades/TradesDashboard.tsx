@@ -46,6 +46,7 @@ export default function TradesDashboard() {
       setLoadingTrades(true);
       try {
         const data = await getTrades(user.id, activeAccountId);
+        console.log("trades data", data);
         setTrades(data);
       } catch (err) {
         console.error("Failed to load trades", err);
