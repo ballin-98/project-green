@@ -18,6 +18,7 @@ const stockDividendCache = {
   "SDAY.TO": 0.364,
   "AGCC.NE": 0.135,
   "HHLE.TO": 0.0934,
+  "HHIS.TO": 0.27,
 } as {
   [key: string]: number;
 };

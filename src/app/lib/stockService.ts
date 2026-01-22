@@ -23,6 +23,7 @@ export const getStock = async (userId: string): Promise<ClientStockData[]> => {
         const stockDetails = await fetch(
           `/api/stock?ticker=${encodeURIComponent(stock.name)}`,
         );
+        if (!stockDetails.ok) return;
         const stockDetailsJson = await stockDetails.json();
 
         return {
