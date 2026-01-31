@@ -16,7 +16,7 @@ const stockDividendCache = {
   "BIGY.TO": 0.625,
   "SDAY.NE": 0.364,
   "SDAY.TO": 0.364,
-  "AGCC.NE": 0.135,
+  "AGCC.NE": 0.215,
   "HHLE.TO": 0.0934,
   "HHIS.TO": 0.27,
 } as {
