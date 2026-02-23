@@ -11,11 +11,11 @@ const getFirstOfMonth = (monthsBack: number): string => {
 
 // need better logic here for dividends
 const stockDividendCache = {
-  "CDAY.NE": 0.366,
-  "CDAY.TO": 0.366,
+  "CDAY.NE": 0.372,
+  "CDAY.TO": 0.372,
   "BIGY.TO": 0.625,
-  "SDAY.NE": 0.364,
-  "SDAY.TO": 0.364,
+  "SDAY.NE": 0.362,
+  "SDAY.TO": 0.362,
   "AGCC.NE": 0.215,
   "HHLE.TO": 0.0934,
   "HHIS.TO": 0.27,
@@ -57,6 +57,9 @@ export async function GET(req: Request): Promise<NextResponse<StockData[]>> {
     // this is hard coded to get more precision for HHLE.TO
     if (ticker === "HHLE.TO") {
       mostRecentDividend = 0.0934;
+    }
+    if (ticker === "BIGY.TO") {
+      mostRecentDividend = 0.625;
     }
     stockResponse.push({
       symbol: result.meta.symbol,
