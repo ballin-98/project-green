@@ -61,6 +61,9 @@ export async function GET(req: Request): Promise<NextResponse<StockData[]>> {
     if (ticker === "BIGY.TO") {
       mostRecentDividend = 0.625;
     }
+    if (ticker === "MSTE.TO") {
+      mostRecentDividend = 0.15;
+    }
     stockResponse.push({
       symbol: result.meta.symbol,
       // @ts-expect-error type error
