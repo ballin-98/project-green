@@ -58,36 +58,33 @@ export default function TradesDashboard() {
     fetchTrades();
   }, [user, activeAccountId]);
 
-  const monthlyProfit = useMemo(() => {
+  const { monthlyProfit, yearlyProfit } = useMemo(() => {
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
 
-    return trades.reduce((sum, trade) => {
+    let monthly = 0;
+    let yearly = 0;
+
+    for (const trade of trades) {
       const date = new Date(trade.date);
-
-      const isSameMonth =
-        date.getMonth() === currentMonth && date.getFullYear() === currentYear;
-
-      if (!isSameMonth) return sum;
-
-      return sum + trade.profit;
-    }, 0);
-  }, [trades]);
-
-  const yearlyProfit = useMemo(() => {
-    const now = new Date();
-    const currentYear = now.getFullYear();
-
-    return trades.reduce((sum, trade) => {
-      const date = new Date(trade.date);
+      const profit = trade.profit;
 
       const isSameYear = date.getFullYear() === currentYear;
+      if (isSameYear) {
+        yearly += profit;
 
-      if (!isSameYear) return sum;
+        const isSameMonth = date.getMonth() === currentMonth;
+        if (isSameMonth) {
+          monthly += profit;
+        }
+      }
+    }
 
-      return sum + trade.profit;
-    }, 0);
+    return {
+      monthlyProfit: monthly,
+      yearlyProfit: yearly,
+    };
   }, [trades]);
 
   const columns: GridColDef[] = [
