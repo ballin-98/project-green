@@ -7,15 +7,15 @@ import {
 } from "@/app/lib/accountService";
 import { getTrades } from "@/app/lib/stockService";
 import { TradeInfo } from "@/app/lib/types";
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Box, Button } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useSWR, { mutate } from "swr";
 import AccountTab from "../stocks/AccountTab";
 import { Add } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import TotalCard from "../stocks/TotalCard";
 
 export default function TradesDashboard() {
   const { user } = useUser();
@@ -58,6 +58,38 @@ export default function TradesDashboard() {
     fetchTrades();
   }, [user, activeAccountId]);
 
+  const monthlyProfit = useMemo(() => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    return trades.reduce((sum, trade) => {
+      const date = new Date(trade.date);
+
+      const isSameMonth =
+        date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+
+      if (!isSameMonth) return sum;
+
+      return sum + trade.profit;
+    }, 0);
+  }, [trades]);
+
+  const yearlyProfit = useMemo(() => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+
+    return trades.reduce((sum, trade) => {
+      const date = new Date(trade.date);
+
+      const isSameYear = date.getFullYear() === currentYear;
+
+      if (!isSameYear) return sum;
+
+      return sum + trade.profit;
+    }, 0);
+  }, [trades]);
+
   const columns: GridColDef[] = [
     { field: "stockName", headerName: "Ticker", flex: 1 },
     { field: "shares", headerName: "Qty", flex: 1 },
@@ -95,6 +127,14 @@ export default function TradesDashboard() {
     <Box
       sx={{ height: "100%", display: "flex", flexDirection: "column", mt: 2 }}
     >
+      <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
+        <TotalCard
+          totalDividends={trades.reduce((sum, trade) => sum + trade.profit, 0)}
+          label="Total Profit"
+        />
+        <TotalCard totalDividends={yearlyProfit} label="Profit This Year" />
+        <TotalCard totalDividends={monthlyProfit} label="Profit This Month" />
+      </Box>
       {/* Account Tabs */}
       <Box
         sx={{
