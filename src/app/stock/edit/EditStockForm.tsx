@@ -77,14 +77,6 @@ export default function EditStockForm() {
           onChange={(e) => setQuantity(e.target.value)}
           required
         />
-
-        {/* <TextField
-          label="Dividend Frequency (per year)"
-          type="number"
-          value={dividendFrequency}
-          onChange={(e) => setDividendFrequency(e.target.value)}
-          required
-        /> */}
         <TextField
           select
           label="Dividend Frequency"
