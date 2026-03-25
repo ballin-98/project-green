@@ -35,23 +35,20 @@ export default function AccountTab({
 
   const commit = async () => {
     if (draft.trim() && draft !== accountName) {
-      console.log("updating account name to:", draft);
       await updateAccountNickname(accountId, draft);
     }
     setEditing(false);
   };
 
   const handleOnSelect = () => {
-    console.log("this account selected:", accountId);
     onSelect(accountId);
   };
 
   const handleDelete = async () => {
-    console.log("trying delete");
     try {
       await onDelete(accountId, accountIndex);
     } catch (error) {
-      console.log("Error deleting account:", error);
+      console.error("Error deleting account:", error);
     }
   };
 

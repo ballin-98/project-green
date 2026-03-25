@@ -14,7 +14,6 @@ const handleCachedGoals = (goalsData?: GoalInfo) => {
 
 export const getStock = async (userId: string): Promise<ClientStockData[]> => {
   try {
-    console.log("Fetching stocks for userId:", userId);
     const ownedStocksResponse = await fetch(`/api/db?userId=${userId}`);
     const ownedStocksResponseJson = await ownedStocksResponse.json();
 
@@ -55,7 +54,6 @@ export const addNewStock = async (
   accountId: string,
 ) => {
   try {
-    console.log("quantity that stock is being called with: ", quantity);
     const response = await fetch(`/api/db`, {
       method: "POST",
       headers: {
@@ -143,7 +141,6 @@ export const addTrade = async (
   accountId: string,
 ) => {
   try {
-    console.log("account id in add trade stock service: ", accountId);
     const response = await fetch(`/api/trades`, {
       method: "POST",
       headers: {
@@ -179,12 +176,8 @@ export const getGoals = async (userId: string) => {
     });
 
     const jsonResponse = await response.json();
-    // console.log("Fetched goals from API:", jsonResponse);
 
     handleCachedGoals(jsonResponse.goals);
-    // console.log("Cached goals:", cachedGoals);
-    // console.log("Returning goals:", jsonResponse.goals);
-    // console.log("Returning goals:", jsonResponse);
     return jsonResponse;
   } catch (error) {
     console.error("Error fetching trades:", error);

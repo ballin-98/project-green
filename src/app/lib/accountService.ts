@@ -5,8 +5,6 @@ export const getAccountsKey = (userId: string) =>
 
 export const getAccounts = async (userId: string): Promise<AccountInfo[]> => {
   try {
-    console.log("Fetching accounts for userId:", userId);
-
     const response = await fetch(`/api/accounts?userId=${userId}`, {
       cache: "no-store",
     });
@@ -47,7 +45,7 @@ export const addAccount = async (userId: string, nickname: string) => {
 
 export const updateAccountNickname = async (
   accountId: string,
-  nickname: string
+  nickname: string,
 ) => {
   try {
     const response = await fetch(`/api/accounts`, {
@@ -73,7 +71,6 @@ export const updateAccountNickname = async (
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const deleteAccount = async (accountId: string): Promise<any> => {
-  console.log("calling delete account service with account id: ", accountId);
   try {
     const response = await fetch("/api/accounts", {
       method: "DELETE",

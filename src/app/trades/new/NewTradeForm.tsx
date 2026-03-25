@@ -22,8 +22,6 @@ export default function NewTradeForm() {
   const { user } = useUser();
   const router = useRouter();
 
-  console.log("user in trade form", user);
-
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
@@ -38,7 +36,6 @@ export default function NewTradeForm() {
     const fetchAccounts = async () => {
       try {
         const accounts = await getAccounts(user.id);
-        console.log("accounts data");
         setAccountsData(accounts);
       } catch (error) {
         console.error("Error fetching accounts:", error);

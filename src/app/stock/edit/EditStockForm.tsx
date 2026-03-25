@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, TextField, Button, Typography } from "@mui/material";
+import { Box, TextField, Button, Typography, MenuItem } from "@mui/material";
 import { updateStock } from "@/app/lib/stockService";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft } from "@mui/icons-material";
@@ -38,10 +38,10 @@ export default function EditStockForm() {
       stockName,
       Number(quantity),
       Number(dividendFrequency),
-      accountId
+      accountId,
     );
     mutate();
-    router.push("/stocks");
+    router.push("/stocks?accountId=" + accountId);
   };
 
   return (
@@ -78,13 +78,28 @@ export default function EditStockForm() {
           required
         />
 
-        <TextField
+        {/* <TextField
           label="Dividend Frequency (per year)"
           type="number"
           value={dividendFrequency}
           onChange={(e) => setDividendFrequency(e.target.value)}
           required
-        />
+        /> */}
+        <TextField
+          select
+          label="Dividend Frequency"
+          value={dividendFrequency}
+          onChange={(e) => {
+            console.log("changeing the value", e.target.value);
+            setDividendFrequency(e.target.value);
+          }}
+          required
+        >
+          <MenuItem value={24}>Semi Monthly</MenuItem>
+          <MenuItem value={12}>Monthly</MenuItem>
+          <MenuItem value={4}>Quarterly</MenuItem>
+          <MenuItem value={1}>Annual</MenuItem>
+        </TextField>
 
         <Button variant="contained" type="submit">
           Update Stock
@@ -94,7 +109,7 @@ export default function EditStockForm() {
         variant="contained"
         sx={{ padding: 1, mt: 2 }}
         startIcon={<ArrowLeft />}
-        onClick={() => router.push("/stocks")}
+        onClick={() => router.push("/stocks?accountId=" + accountId)}
       >
         Back
       </Button>
