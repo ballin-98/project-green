@@ -6,7 +6,6 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("userId");
-  console.log("userId received in GET /api/accounts:", userId);
 
   if (!userId) {
     return NextResponse.json({ error: "userId is required" }, { status: 400 });
@@ -34,7 +33,7 @@ export async function POST(req: NextRequest) {
   if (!userId || !nickname) {
     return NextResponse.json(
       { error: "userId and nickname are required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -63,7 +62,7 @@ export async function PUT(req: NextRequest) {
   if (!accountId || !nickname) {
     return NextResponse.json(
       { error: "accountId and nickname are required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -88,16 +87,12 @@ export async function DELETE(req: NextRequest) {
   const body = await req.json();
   const { accountId } = body;
 
-  console.log("got the account id");
-
   if (!accountId) {
     return NextResponse.json(
       { error: "accountId is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
-
-  console.log("about to hit the db");
 
   const { error } = await supabase
     .from("accounts")

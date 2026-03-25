@@ -19,7 +19,6 @@ export interface TradeListProps {
 
 export default function TradeList({ trades, accountId }: TradeListProps) {
   const router = useRouter();
-  console.log("trades, accountId in TradeList: ", trades, accountId);
   if (trades.length === 0) {
     return (
       <Box

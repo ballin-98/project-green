@@ -11,11 +11,11 @@ const getFirstOfMonth = (monthsBack: number): string => {
 
 // need better logic here for dividends
 const stockDividendCache = {
-  "CDAY.NE": 0.372,
-  "CDAY.TO": 0.372,
-  "BIGY.TO": 0.625,
-  "SDAY.NE": 0.362,
-  "SDAY.TO": 0.362,
+  "CDAY.NE": 0.19,
+  "CDAY.TO": 0.19,
+  "BIGY.TO": 0.3125,
+  "SDAY.NE": 0.182,
+  "SDAY.TO": 0.182,
   "AGCC.NE": 0.215,
   "HHLE.TO": 0.0934,
   "HHIS.TO": 0.27,
@@ -28,14 +28,12 @@ export async function GET(req: Request): Promise<NextResponse<StockData[]>> {
   const stockResponse: StockData[] = [];
   const url = new URL(req.url);
   const ticker = url.searchParams.get("ticker");
-  // console.log("ticker:", ticker);
 
   if (!ticker) {
     return NextResponse.json(stockResponse);
   }
 
   const firstOfLastMonth = getFirstOfMonth(3);
-  // console.log("first of month:", firstOfLastMonth);
   // function to get last month date as string
   try {
     const yahooFinance = new YahooFinance();
@@ -59,7 +57,7 @@ export async function GET(req: Request): Promise<NextResponse<StockData[]>> {
       mostRecentDividend = 0.0934;
     }
     if (ticker === "BIGY.TO") {
-      mostRecentDividend = 0.625;
+      mostRecentDividend = stockDividendCache[ticker] || 0.3125;
     }
     if (ticker === "MSTE.TO") {
       mostRecentDividend = 0.15;

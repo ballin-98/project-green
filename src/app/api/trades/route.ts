@@ -12,7 +12,6 @@ export async function GET(
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("userId");
   const account_id = searchParams.get("accountId");
-  console.log("account id used in the query: ", account_id);
   const { data, error } = await supabase
     .from("trades")
     .select("*")

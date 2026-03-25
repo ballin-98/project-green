@@ -19,12 +19,7 @@ import {
   calculateTotalAssets,
 } from "../lib/utils/dashboardHelpers";
 import { Edit, Delete, Add } from "@mui/icons-material";
-import {
-  deleteStock,
-  // getStock,
-  getTrades,
-  getGoals,
-} from "../lib/stockService";
+import { deleteStock, getTrades, getGoals } from "../lib/stockService";
 import { useRouter } from "next/navigation";
 import { useUser } from "../context/UserContext";
 import { useStockContext } from "../context/StockProvider";
@@ -36,6 +31,7 @@ import {
 } from "../lib/accountService";
 import AccountTab from "./AccountTab";
 import useSWR, { mutate } from "swr";
+import { useSearchParams } from "next/navigation";
 
 export interface AppUser {
   email: string;
@@ -48,11 +44,9 @@ export default function Dashboard() {
   const [yearlyDividends, setYearlyDividends] = useState(0);
   const [trades, setTrades] = useState<TradeInfo[]>([]);
   const [loading, setLoading] = useState(true);
-  // const [tradesLoading, setTradesLoading] = useState(true);
   const [goals, setGoals] = useState<GoalInfo | undefined>(undefined);
   const router = useRouter();
   const { user } = useUser();
-  // const searchParams = useSearchParams();
 
   const { data: accountsData = [] } = useSWR(
     user ? getAccountsKey(user.id) : null,
@@ -62,12 +56,20 @@ export default function Dashboard() {
   const { stocks } = useStockContext();
   const [filteredStocks, setFilteredStocks] = useState(stocks);
   const [activeAccountId, setActiveAccountId] = useState<string | null>(null);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (accountsData.length > 0 && !activeAccountId) {
+      const accountIdFromUrl = searchParams.get("accountId");
+
+      if (accountIdFromUrl) {
+        setActiveAccountId(accountIdFromUrl);
+        return;
+      }
+      // fallback to first account if no URL param is present
       setActiveAccountId(accountsData[0]?.id);
     }
-  }, [accountsData, activeAccountId]);
+  }, [accountsData, activeAccountId, searchParams]);
 
   useEffect(() => {
     if (!activeAccountId) return;
@@ -121,12 +123,6 @@ export default function Dashboard() {
   useEffect(() => {
     if (!activeAccountId || !user) return;
     const fetchTrades = async () => {
-      console.log(
-        "Fetching trades for account:",
-        activeAccountId,
-        " user:",
-        user.id,
-      );
       try {
         const tradesData = await getTrades(user.id, activeAccountId!);
         setTrades(tradesData);
@@ -195,10 +191,12 @@ export default function Dashboard() {
       valueGetter: (_, row) => divFreqToString(row.dividendFrequency),
       renderCell: (params) => {
         const value = params.value;
+        console.log("Rendering cell with value:", value);
 
         const colors: Record<string, { bg: string }> = {
-          Monthly: { bg: "#9cf09eff" },
-          Quarterly: { bg: "#D1B3FF" },
+          Monthly: { bg: "#9cf09eff" }, // green
+          "Semi Monthly": { bg: "#a8fcff" }, // soft blue (new)
+          Quarterly: { bg: "#D1B3FF" }, // purple
         };
 
         return (

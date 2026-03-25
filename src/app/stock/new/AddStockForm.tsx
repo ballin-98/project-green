@@ -33,8 +33,6 @@ export default function StockForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("this is the quantity: ", form.quantity);
-
     if (!user) return;
 
     await addNewStock(
@@ -44,9 +42,6 @@ export default function StockForm() {
       Number(form.dividendFrequency),
       form.accountId,
     );
-
-    console.log("Finished adding stock");
-
     // Reset form values
     setForm(initialFormState);
   };
