@@ -191,7 +191,6 @@ export default function Dashboard() {
       valueGetter: (_, row) => divFreqToString(row.dividendFrequency),
       renderCell: (params) => {
         const value = params.value;
-        console.log("Rendering cell with value:", value);
 
         const colors: Record<string, { bg: string }> = {
           Monthly: { bg: "#9cf09eff" }, // green

@@ -42,6 +42,7 @@ export default function StockForm() {
       Number(form.dividendFrequency),
       form.accountId,
     );
+    router.push("/stocks");
     // Reset form values
     setForm(initialFormState);
   };

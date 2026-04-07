@@ -1,3 +1,4 @@
+import { sendToLoki } from "@/app/lib/loki";
 import { StockData } from "@/app/lib/types";
 import { NextResponse } from "next/server";
 import YahooFinance from "yahoo-finance2";
@@ -70,8 +71,14 @@ export async function GET(req: Request): Promise<NextResponse<StockData[]>> {
       price: result.meta.regularMarketPrice || 0,
     });
   } catch (error) {
+    await sendToLoki(
+      `Failed to fetch data for ticker ${ticker}: ${error instanceof Error ? error.message : String(error)}`,
+      {
+        action: "fetch_stock_data_error",
+        ticker: ticker,
+      },
+    );
     console.error(`Error fetching data for ticker ${ticker}:`, error);
   }
-
   return NextResponse.json(stockResponse);
 }

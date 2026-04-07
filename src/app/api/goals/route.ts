@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "../../lib/supabaseClient";
 import { GoalInfo } from "@/app/lib/types";
+import { sendToLoki } from "@/app/lib/loki";
 
 export async function GET(
   req: NextRequest,
@@ -22,6 +23,13 @@ export async function GET(
   }
 
   if (error) {
+    await sendToLoki(
+      `Failed to load goals for user ID ${userId}: ${error.message}`,
+      {
+        action: "load_goals_error",
+        user_id: userId ?? "",
+      },
+    );
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 

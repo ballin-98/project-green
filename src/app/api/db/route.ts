@@ -3,10 +3,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "../../lib/supabaseClient";
 import { ClientStockData } from "@/app/lib/types";
+import { sendToLoki } from "@/app/lib/loki";
 
 // return list of stocks saved in supabase db
 export async function GET(
-  req: NextRequest
+  req: NextRequest,
 ): Promise<NextResponse<ClientStockData[] | { error: string }>> {
   const supabase = await createClient();
 
@@ -38,7 +39,19 @@ export async function GET(
     }));
   }
 
+  await sendToLoki(`Loading all stock for user ID ${userId}`, {
+    action: "load_stock",
+    user_id: userId,
+  });
+
   if (error) {
+    await sendToLoki(
+      `Failed to load stocks for user ID ${userId}: ${error.message}`,
+      {
+        action: "load_stock_error",
+        user_id: userId,
+      },
+    );
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
@@ -69,9 +82,17 @@ export async function POST(req: Request): Promise<NextResponse> {
       throw error;
     }
 
+    await sendToLoki(`Added new stock`, {
+      action: "add_stock",
+      user_id,
+      account_id,
+    });
+
     return NextResponse.json({ data });
   } catch (err: any) {
-    console.error("Error inserting stock:", err);
+    await sendToLoki(`Failed to save stock: ${err.message}`, {
+      action: "save_stock_error",
+    });
     return NextResponse.json({ error: err?.message }, { status: 500 });
   }
 }
@@ -87,7 +108,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
     if (!name) {
       return NextResponse.json(
         { error: "Missing stock name" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -107,8 +128,16 @@ export async function PUT(req: Request): Promise<NextResponse> {
 
     if (error) throw error;
 
+    await sendToLoki(`Updated existing stock: ${name} for user ID ${user_id}`, {
+      action: "update_stock",
+      user_id: user_id,
+    });
+
     return NextResponse.json({ data });
   } catch (err: any) {
+    await sendToLoki(`Failed to update stock: ${err.message}`, {
+      action: "update_stock_error",
+    });
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
@@ -122,7 +151,7 @@ export async function DELETE(req: Request): Promise<NextResponse> {
     if (!stock_name) {
       return NextResponse.json(
         { error: "Missing stock name" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -136,9 +165,16 @@ export async function DELETE(req: Request): Promise<NextResponse> {
       throw error;
     }
 
+    await sendToLoki(`Deleted stock: ${stock_name} for user ID ${user_id}`, {
+      action: "delete_stock",
+      user_id: user_id,
+    });
+
     return NextResponse.json({ data });
   } catch (err: any) {
-    console.error("Error deleting stock:", err);
+    await sendToLoki(`Failed to delete stock: ${err.message}`, {
+      action: "delete_stock_error",
+    });
     return NextResponse.json({ error: err?.message }, { status: 500 });
   }
 }

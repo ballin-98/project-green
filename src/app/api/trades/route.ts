@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "../../lib/supabaseClient";
 import { TradeInfo } from "@/app/lib/types";
+import { sendToLoki } from "@/app/lib/loki";
 
 export async function GET(
   req: NextRequest,
@@ -29,7 +30,24 @@ export async function GET(
     }));
   }
 
+  await sendToLoki(
+    `Loading trades for user ID ${userId} and account ID ${account_id}`,
+    {
+      action: "load_trades",
+      user_id: userId || "unknown",
+      account_id: account_id || "unknown",
+    },
+  );
+
   if (error) {
+    await sendToLoki(
+      `Failed to load trades for user ID ${userId} and account ID ${account_id}: ${error.message}`,
+      {
+        action: "load_trades_error",
+        user_id: userId || "unknown",
+        account_id: account_id || "unknown",
+      },
+    );
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
@@ -60,9 +78,20 @@ export async function POST(req: Request): Promise<NextResponse> {
       throw error;
     }
 
+    await sendToLoki(
+      `Added new trade: ${stock_name} with ${shares} shares and profit ${profit} for user ID ${user_id} and account ID ${account_id}`,
+      {
+        action: "add_trade",
+        user_id,
+        account_id,
+      },
+    );
+
     return NextResponse.json({ data });
   } catch (err: any) {
-    console.error("Error inserting stock:", err);
+    await sendToLoki(`Failed to save trade: ${err.message}`, {
+      action: "save_trade_error",
+    });
     return NextResponse.json({ error: err?.message }, { status: 500 });
   }
 }
