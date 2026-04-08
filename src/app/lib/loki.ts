@@ -13,14 +13,8 @@ export async function sendToLoki(
   message: string,
   labels: Record<string, string> = {},
 ) {
-  console.log("truing to send to loki");
   try {
-    console.log("LOKI_URL:", LOKI_URL);
-    console.log("LOKI_USERNAME:", LOKI_USERNAME);
-    console.log("LOKI_PASSWORD:", LOKI_PASSWORD ? "****" : "not set");
-    console.log("header", getAuthHeader());
     const header = getAuthHeader();
-    console.log("Auth header:", header);
     const res = await fetch(LOKI_URL, {
       method: "POST",
       headers: {
@@ -44,7 +38,6 @@ export async function sendToLoki(
         ],
       }),
     });
-    console.log("finished sending to loki");
     return res;
   } catch (err) {
     console.error("Failed to send log to Loki", err);

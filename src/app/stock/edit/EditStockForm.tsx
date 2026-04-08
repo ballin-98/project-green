@@ -82,7 +82,6 @@ export default function EditStockForm() {
           label="Dividend Frequency"
           value={dividendFrequency}
           onChange={(e) => {
-            console.log("changeing the value", e.target.value);
             setDividendFrequency(e.target.value);
           }}
           required

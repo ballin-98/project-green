@@ -153,7 +153,6 @@ export default function Dashboard() {
   const handleAddAccount = async () => {
     if (!user) return;
     await addAccount(user?.id, "New Account");
-    console.log("calling mutate for accounts");
     mutate(getAccountsKey(user.id));
   };
 
