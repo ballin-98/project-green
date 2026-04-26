@@ -43,7 +43,7 @@ export default function AppHeader() {
       >
         <Typography
           variant="h6"
-          sx={{ margin: 0 }}
+          sx={{ margin: 0, cursor: "pointer" }}
           onClick={() => router.push("/")}
         >
           Portfolio Overview

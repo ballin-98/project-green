@@ -13,12 +13,20 @@ export async function GET(
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("userId");
   const account_id = searchParams.get("accountId");
-  const { data, error } = await supabase
+
+  let query = supabase
     .from("trades")
     .select("*")
     .eq("user_id", userId)
-    .eq("account_id", account_id)
     .order("created_at", { ascending: false });
+
+  // only filter by account if provided
+  if (account_id && account_id !== "all") {
+    console.log("somehow in here??");
+    query = query.eq("account_id", account_id);
+  }
+
+  const { data, error } = await query;
 
   let tradeData: TradeInfo[] = [];
   if (data) {

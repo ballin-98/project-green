@@ -50,7 +50,16 @@ export default function Dashboard() {
 
   const { data: accountsData = [] } = useSWR(
     user ? getAccountsKey(user.id) : null,
-    () => getAccounts(user!.id),
+    async () => {
+      let accounts = await getAccounts(user!.id);
+      if (accounts.length > 1) {
+        accounts = [
+          { id: "all", nickname: "All Accounts", user_id: user!.id },
+          ...accounts,
+        ];
+      }
+      return accounts;
+    },
   );
 
   const { stocks } = useStockContext();
@@ -67,7 +76,7 @@ export default function Dashboard() {
         return;
       }
       // fallback to first account if no URL param is present
-      setActiveAccountId(accountsData[0]?.id);
+      setActiveAccountId("all");
     }
   }, [accountsData, activeAccountId, searchParams]);
 
@@ -81,7 +90,7 @@ export default function Dashboard() {
     router.replace(`?${params.toString()}`);
   }, [activeAccountId, router]);
 
-  // run this once we have a user
+  // run this once we have a user to get goal data
   useEffect(() => {
     if (!user || !stocks) return;
     const fetchData = async () => {
@@ -99,13 +108,44 @@ export default function Dashboard() {
     fetchData();
   }, [user, stocks]);
 
+  // this filters stocks based on the active account id
   useEffect(() => {
-    if (activeAccountId && stocks) {
-      const newFilteredStocks = stocks.filter(
-        (stock) => stock.accountId === activeAccountId,
+    if (!activeAccountId || !stocks) return;
+
+    if (activeAccountId === "all") {
+      const groupedStocks = Object.values(
+        stocks.reduce(
+          (acc, stock) => {
+            const key = stock.name;
+
+            if (!acc[key]) {
+              acc[key] = {
+                ...stock,
+                quantity: Number(stock.quantity) || 0,
+              };
+            } else {
+              acc[key].quantity += Number(stock.quantity) || 0;
+
+              // optional:
+              // if price differs by account, you may want weighted average later
+              acc[key].price = Number(stock.price) || 0;
+            }
+
+            return acc;
+          },
+          {} as Record<string, any>,
+        ),
       );
-      setFilteredStocks(newFilteredStocks);
+
+      setFilteredStocks(groupedStocks);
+      return;
     }
+
+    const newFilteredStocks = stocks.filter(
+      (stock) => stock.accountId === activeAccountId,
+    );
+
+    setFilteredStocks(newFilteredStocks);
   }, [activeAccountId, stocks]);
 
   useEffect(() => {
@@ -120,6 +160,8 @@ export default function Dashboard() {
     }
   }, [filteredStocks]);
 
+  // get all the trades for the active account
+  // if active account == all pull all trades for all accounts (don't filter by account id in the query)
   useEffect(() => {
     if (!activeAccountId || !user) return;
     const fetchTrades = async () => {
@@ -248,6 +290,7 @@ export default function Dashboard() {
             size="small"
             color="primary"
             onClick={() => handleEdit(params.row)}
+            disabled={activeAccountId === "all"} // disable edit if "All Accounts" is selected
           >
             <Edit fontSize="small" />
           </IconButton>
@@ -255,6 +298,7 @@ export default function Dashboard() {
             size="small"
             color="error"
             onClick={() => handleDelete(params.row)}
+            disabled={activeAccountId === "all"} // disable delete if "All Accounts" is selected
           >
             <Delete fontSize="small" />
           </IconButton>
