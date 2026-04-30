@@ -118,7 +118,7 @@ export const deleteStock = async (userId: string, stockName: string) => {
   }
 };
 
-export const getTrades = async (userId: string, accountId: string) => {
+export const getTrades = async (userId: string, accountId?: string) => {
   try {
     const response = await fetch(
       `/api/trades?userId=${userId}&accountId=${accountId}`,
