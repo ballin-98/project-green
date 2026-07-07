@@ -20,6 +20,7 @@ const stockDividendCache = {
   "AGCC.NE": 0.215,
   "HHLE.TO": 0.0934,
   "HHIS.TO": 0.27,
+  "MSTE.TO": 0.1,
 } as {
   [key: string]: number;
 };
@@ -57,11 +58,11 @@ export async function GET(req: Request): Promise<NextResponse<StockData[]>> {
     if (ticker === "HHLE.TO") {
       mostRecentDividend = 0.0934;
     }
-    if (ticker === "BIGY.TO") {
-      mostRecentDividend = stockDividendCache[ticker] || 0.3125;
-    }
+    // if (ticker === "BIGY.TO") {
+    //   mostRecentDividend = stockDividendCache[ticker] || 0.3125;
+    // }
     if (ticker === "MSTE.TO") {
-      mostRecentDividend = 0.15;
+      mostRecentDividend = 0.1;
     }
     stockResponse.push({
       symbol: result.meta.symbol,

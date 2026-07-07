@@ -95,9 +95,11 @@ export default function Dashboard() {
     if (!user || !stocks) return;
     const fetchData = async () => {
       try {
-        const [goalData] = await Promise.all([getGoals(user.id)]);
+        const [goalData] = await Promise.all([
+          getGoals(user.id, activeAccountId ?? "all"),
+        ]);
         if (goalData) {
-          setGoals(goalData);
+          setGoals(goalData.goals);
         }
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -106,7 +108,7 @@ export default function Dashboard() {
       }
     };
     fetchData();
-  }, [user, stocks]);
+  }, [user, stocks, activeAccountId]);
 
   // this filters stocks based on the active account id
   useEffect(() => {
@@ -174,6 +176,11 @@ export default function Dashboard() {
     };
     fetchTrades();
   }, [activeAccountId, user]);
+
+  const handleGoalUpdate = async () => {
+    const goals = await getGoals(user?.id ?? "");
+    setGoals(goals.goals);
+  };
 
   const handleEdit = (params: any) => {
     router.push(
@@ -459,12 +466,14 @@ export default function Dashboard() {
             <ProgressBar
               current={monthlyDividends}
               goal={Number(goals?.shortTermGoal ?? 750)}
-              label="Monthly Dividend"
+              label="Monthly Goal"
+              onGoalUpdate={handleGoalUpdate}
             />
             <ProgressBar
               current={yearlyDividends}
               goal={Number(goals?.longTermGoal ?? 8000)}
-              label="Yearly Income"
+              label="Yearly Goal"
+              onGoalUpdate={handleGoalUpdate}
             />
           </Box>
           {activeAccountId != null && trades != undefined && (

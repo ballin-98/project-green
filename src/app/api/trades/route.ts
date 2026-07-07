@@ -20,9 +20,7 @@ export async function GET(
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
-  // only filter by account if provided
   if (account_id && account_id !== "all") {
-    console.log("somehow in here??");
     query = query.eq("account_id", account_id);
   }
 

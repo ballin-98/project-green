@@ -1,3 +1,4 @@
+import { GoalType } from "../api/goals/route";
 import { ClientStockData, GoalInfo } from "./types";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -165,15 +166,18 @@ export const addTrade = async (
 //   shortTermGoal: 600,
 // };
 
-export const getGoals = async (userId: string) => {
+export const getGoals = async (userId: string, accountId?: string) => {
   try {
-    const goals = handleCachedGoals();
-    if (goals) {
-      return goals;
-    }
-    const response = await fetch(`/api/goals?userId=${userId}`, {
-      cache: "no-store",
-    });
+    // const goals = handleCachedGoals();
+    // if (goals) {
+    //   return goals;
+    // }
+    const response = await fetch(
+      `/api/goals?userId=${userId}&accountId=${accountId}`,
+      {
+        cache: "no-store",
+      },
+    );
 
     const jsonResponse = await response.json();
 
@@ -182,5 +186,30 @@ export const getGoals = async (userId: string) => {
   } catch (error) {
     console.error("Error fetching trades:", error);
     return [];
+  }
+};
+
+export const updateGoal = async (
+  userId: string,
+  field: GoalType,
+  value: number,
+  accountId: string,
+) => {
+  try {
+    const response = await fetch(`/api/goals`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId,
+        field,
+        value,
+        accountId,
+      }),
+    });
+    return response.json();
+  } catch (error) {
+    console.error("Error updating goal:", error);
   }
 };

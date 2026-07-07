@@ -1,19 +1,43 @@
 "use client";
 
-import { LinearProgress, Box, Typography } from "@mui/material";
+import { LinearProgress, Box, Typography, IconButton } from "@mui/material";
+import { Edit } from "@mui/icons-material";
+import EditNumberDialog from "./editGoalModal";
+import { useState } from "react";
+import { updateGoal } from "../lib/stockService";
+import { useUser } from "../context/UserContext";
+import { useSearchParams } from "next/navigation";
 
 export interface ProgressBarProps {
   current: number;
   goal: number;
   label: string;
+  onGoalUpdate: () => Promise<void>;
 }
 
 export default function ProgressBar({
   current,
   goal,
   label,
+  onGoalUpdate,
 }: ProgressBarProps) {
   const value = (current / goal) * 100 || 0;
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const { user } = useUser();
+  const searchParams = useSearchParams();
+  const accountId = searchParams.get("accountId");
+
+  const handleUpdateGoal = async (newGoal: number) => {
+    const goalField =
+      label.toLowerCase() === "yearly goal" ? "longTermGoal" : "shortTermGoal";
+    await updateGoal(user?.id ?? "", goalField, newGoal, accountId ?? "");
+    await onGoalUpdate();
+  };
+
+  const handleOpen = () => {
+    setModalOpen(true);
+  };
 
   return (
     <Box
@@ -28,18 +52,34 @@ export default function ProgressBar({
         borderRadius: 3,
       }}
     >
-      {/* Small label/header */}
-      <Typography
-        variant="subtitle2"
+      <Box
         sx={{
-          fontWeight: 600,
-          color: "text.secondary",
-          letterSpacing: 0.5,
-          textTransform: "uppercase",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
-        {label}
-      </Typography>
+        <Typography
+          variant="subtitle2"
+          sx={{
+            fontWeight: 600,
+            color: "text.secondary",
+            letterSpacing: 0.5,
+            textTransform: "uppercase",
+          }}
+        >
+          {label}
+        </Typography>
+        <IconButton onClick={handleOpen} size="small">
+          <Edit fontSize="small" />
+        </IconButton>
+        <EditNumberDialog
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          value={goal}
+          onSave={handleUpdateGoal}
+        />
+      </Box>
 
       {/* Progress bar with side numbers */}
       <Box

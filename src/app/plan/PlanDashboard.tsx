@@ -76,7 +76,7 @@ export default function PlanDashboard() {
 
   const updateStock = (id: number, potential: number, cash: number) => {
     const updatedStocks = potentialStocks.map((stock) =>
-      stock.id === id ? { ...stock, potential, cash } : stock
+      stock.id === id ? { ...stock, potential, cash } : stock,
     );
     setPotentialStocks(updatedStocks);
   };
@@ -210,11 +210,13 @@ export default function PlanDashboard() {
               current={monthlyDividends}
               goal={Number(goals.shortTermGoal) ?? 0}
               label="Monthly Dividend"
+              onGoalUpdate={async () => {}}
             />
             <ProgressBar
               current={yearlyDividends}
               goal={Number(goals.longTermGoal) ?? 0}
               label="Yearly Income"
+              onGoalUpdate={async () => {}}
             />
           </Box>
 
